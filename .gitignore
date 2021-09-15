@@ -2,3 +2,6 @@
 janus.egg-info/
 *__pycache__/
 MANIFEST
+.ipynb_checkpoints/
+*.ipynb
+*.code-workspace
