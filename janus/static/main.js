@@ -25,10 +25,14 @@ define([
     JanusHide,
     JanusHistory,
     JanusUI
-){
+) {
 
     function loadCSS() {
-        /* Load css for the extension */
+        /* 
+         * Load css for the extension as a link in header (at end of head).
+         * Note that link element has a timestamp, assumed to be from
+         * build time.
+         */
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -50,7 +54,7 @@ define([
     }
 
 
-    function loadExtension(){
+    function loadExtension() {
         /* Called as extension loads and notebook opens */
 
         loadCSS();
