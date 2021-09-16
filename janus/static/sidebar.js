@@ -10,7 +10,6 @@ define([
     'notebook/js/cell',
     'notebook/js/codecell',
     'notebook/js/textcell',
-    '../janus/versions',
     '../janus/utils'
 ], function(
     require,
@@ -19,9 +18,8 @@ define([
     Cell,
     CodeCell,
     TextCell,
-    JanusVersions,
     JanusUtils
-){
+) {
 
     var Sidebar = function(nb) {
         /* A sidebar panel for showing groups of hidden cells
@@ -63,7 +61,7 @@ define([
 
 
         // only proceed if sidebar is currently collapsed
-        if(! this.collapsed){
+        if (!this.collapsed) {
             return;
         }
 
@@ -87,7 +85,7 @@ define([
             width: sidebar_width,
             top: 20,
             padding: '0px'
-        }, 400, function (){
+        }, 400, function() {
 
             // make sure all code cells are properly rendered
             for (var i = 0; i < Jupyter.sidebar.sections.length; i++) {
@@ -133,9 +131,9 @@ define([
         $("#notebook-container").animate({
             marginLeft: margin,
             width: menubar_width
-            }, 400, function(){
-                $("#notebook-container").css( 'margin-left', 'auto' )
-                $("#notebook-container").css( 'width', '' )
+        }, 400, function() {
+            $("#notebook-container").css('margin-left', 'auto')
+            $("#notebook-container").css('width', '')
         })
 
         // hide the sidebar
@@ -147,14 +145,14 @@ define([
 
             // hide all sections
             $('.section').hide();
-            for (var i=0; i< that.sections.length; i++){
+            for (var i = 0; i < that.sections.length; i++) {
                 that.sections[i].showing = false;
             }
         });
     };
 
 
-    var Section = function( marker = null ) {
+    var Section = function(marker = null) {
         /* A group of contiguous cells to be shown in the sidebar */
 
         var section = this;
@@ -187,42 +185,42 @@ define([
         // add header
         var header = $("<div/>").addClass('section-header')
         var closeContainer = $("<div/>").addClass('section-close')
-            .click( function(){
+            .click(function() {
                 that.close();
             })
             .append($("<i>")
-            .addClass("fa fa-angle-left section-close-button")
-        )
+                .addClass("fa fa-angle-left section-close-button")
+            )
         header.append(closeContainer)
 
         if ($(this.marker).hasClass('hidden-output')) {
             var secTitle = $("<div/>").addClass('section-title')
-                                .addClass('fa')
-                                .addClass('fa-area-chart')
-                                .css('padding-top', '3px')
+                .addClass('fa')
+                .addClass('fa-area-chart')
+                .css('padding-top', '3px')
         } else if ($(this.marker).hasClass('hidden-code')) {
             var secTitle = $("<div/>").addClass('section-title')
-                                .addClass('fa')
-                                .addClass('fa-code')
-                                .css('padding-top', '3px')
+                .addClass('fa')
+                .addClass('fa-code')
+                .css('padding-top', '3px')
         } else {
             var secTitle = $("<div/>").addClass('section-title')
-                                .text(title)
-                                .click(function(event){
-                                    enableVersionNameEditing(this)
-                                    event.stopPropagation()
-                                })
-                                .focusout(function(){
-                                    disableVersionNameEditing(this, that)
-                                })
-                                .hover(function(event){
-                                    this.style.color = "#333"
-                                    this.style.background = "#DDD"
-                                },
-                                function(event){
-                                    this.style.color = ""
-                                    this.style.background = ""
-                                });
+                .text(title)
+                .click(function(event) {
+                    enableVersionNameEditing(this)
+                    event.stopPropagation()
+                })
+                .focusout(function() {
+                    disableVersionNameEditing(this, that)
+                })
+                .hover(function(event) {
+                        this.style.color = "#333"
+                        this.style.background = "#DDD"
+                    },
+                    function(event) {
+                        this.style.color = ""
+                        this.style.background = ""
+                    });
         }
         header.append(secTitle)
         this.element.append(header)
@@ -253,7 +251,7 @@ define([
             }
 
             // hide output if needed
-            if (newCell.metadata.janus.source_hidden && ! newCell.metadata.janus.output_hidden) {
+            if (newCell.metadata.janus.source_hidden && !newCell.metadata.janus.output_hidden) {
                 newCell.element.find("div.output_wrapper").hide();
             }
 
@@ -267,25 +265,22 @@ define([
                 // select the appropriate cell in the original notebook
                 this.events.trigger('select.Cell', {
                     'cell': this.nb_cell,
-                    'extendSelection':event.shiftKey
+                    'extendSelection': event.shiftKey
                 });
             }
 
             // propigate edits in sidebar cell to main notebook cell
-            newCell.code_mirror.on('change', function(){
-                if(newCell.nb_cell){
-                    newCell.nb_cell.set_text( newCell.get_text() )
+            newCell.code_mirror.on('change', function() {
+                if (newCell.nb_cell) {
+                    newCell.nb_cell.set_text(newCell.get_text())
                 }
             });
-
-            // render any history markers
-            JanusVersions.renderMarkers(newCell);
         }
 
         // focus the first cell in the sidebar
-        if(cells.length > 0){
+        if (cells.length > 0) {
             cells[0].sb_cell.element.focus();
-            if(cells[0].cell_type == 'code'){
+            if (cells[0].cell_type == 'code') {
                 cells[0].sb_cell.focus_editor();
             }
         }
@@ -293,7 +288,7 @@ define([
         var selCell = Jupyter.notebook.get_selected_cell()
         selCell.element.focus()
         selCell.focus_cell()
-        if(selCell.cell_type == 'code'){
+        if (selCell.cell_type == 'code') {
             selCell.focus_editor();
         }
 
@@ -348,7 +343,7 @@ define([
     }
 
 
-    Sidebar.prototype.updateHiddenCells = function (){
+    Sidebar.prototype.updateHiddenCells = function() {
         /* Update cells in the notebook and the sidebar */
 
         this.updateHiddenCellsNotebook()
@@ -385,7 +380,7 @@ define([
             // create placeholder if at last cell, or at visible cell after
             // a group of hidden cells
             var numHidden = serial_hidden_cells.length
-            if ( i == cells.length - 1 && cellHidden || (! cellHidden && numHidden > 0) ){
+            if (i == cells.length - 1 && cellHidden || (!cellHidden && numHidden > 0)) {
 
                 var cell_ids = []
                 for (var j = 0; j < numHidden; j++) {
@@ -414,7 +409,7 @@ define([
         // copy old section array
         var oldSections = []
 
-        if (Jupyter.sidebar.sections){
+        if (Jupyter.sidebar.sections) {
             oldSections = Jupyter.sidebar.sections.slice();
         }
         var newSections = [];
@@ -422,7 +417,7 @@ define([
 
         // get a list of just the cell ids shown in each marker
         var oldSectionIDs = []
-        for (var i=0; i < oldSections.length; i++ ){
+        for (var i = 0; i < oldSections.length; i++) {
 
             // use to track if this section has been matched
             oldSections[i].found = false;
@@ -458,14 +453,14 @@ define([
                 // add the section to our list
                 newSections.push(newSection)
 
-            // or create a new section if needed
+                // or create a new section if needed
             } else {
 
                 // first get a list of the cells to copy
                 var cells = Jupyter.notebook.get_cells()
                 var cells_to_copy = []
                 for (var j = 0; j < cells.length; j++) {
-                    if ( $.inArray( cells[j].metadata.janus.id, markerIDs ) > -1 ){
+                    if ($.inArray(cells[j].metadata.janus.id, markerIDs) > -1) {
                         cells_to_copy.push(cells[j])
                     }
                 }
@@ -473,7 +468,7 @@ define([
                 // assign the correct title
                 var title = ""
                 var title_labels = $(markers[i]).find('.hide-label')
-                if (title_labels.length > 0){
+                if (title_labels.length > 0) {
                     var title = title_labels[0].innerHTML
                 }
 
@@ -492,7 +487,7 @@ define([
         }
 
         // get rid of old sections that no longer have a match
-        for (var i = 0; i < oldSections.length; i ++ ){
+        for (var i = 0; i < oldSections.length; i++) {
             if (oldSections[i].found == false) {
                 oldSections[i].element.hide()
                 oldSections[i].element.remove()
@@ -505,8 +500,8 @@ define([
         // show / hide all sections
         Jupyter.sidebar.sections = newSections
         var anyShowing = false
-        for (var i = 0; i < newSections.length; i ++){
-            if (newSections[i].showing){
+        for (var i = 0; i < newSections.length; i++) {
+            if (newSections[i].showing) {
                 anyShowing = true;
                 newSections[i].element.show()
                 $(newSections[i].marker).addClass('active')
@@ -539,7 +534,7 @@ define([
         */
 
         // if no old sections, return
-        if (oldSectionIDs.length == 0){
+        if (oldSectionIDs.length == 0) {
             return -1
         }
 
@@ -547,9 +542,9 @@ define([
         if (JSON.stringify(markerIDs) == JSON.stringify(oldSectionIDs[sectionIndex])) {
             return sectionIndex
 
-        // otherwise search through all old sections
+            // otherwise search through all old sections
         } else {
-            for (var i = 0; i < oldSectionIDs.length; i ++) {
+            for (var i = 0; i < oldSectionIDs.length; i++) {
                 if (JSON.stringify(markerIDs) == JSON.stringify(oldSectionIDs[i])) {
                     return i;
                 }
@@ -561,7 +556,7 @@ define([
     }
 
 
-    Sidebar.prototype.startRepositionTimer = function () {
+    Sidebar.prototype.startRepositionTimer = function() {
         /* Ensure we don't reposition many times in a row since cell.select
             seems to get called very frequently by background processes */
 
@@ -570,7 +565,7 @@ define([
     }
 
 
-    Sidebar.prototype.repositionSections = function (initialPos = false){
+    Sidebar.prototype.repositionSections = function(initialPos = false) {
         /* Reposition the sidebar sections based on what is currently selected
 
         Args:
@@ -604,7 +599,7 @@ define([
         // position starting with selected section
         if ((selCellHidden || selOutHidden || selSourceHidden) && showing) {
 
-            if (selSection < 0){
+            if (selSection < 0) {
                 return
             }
 
@@ -616,55 +611,55 @@ define([
             if (showing) {
                 var yPos = getYPos(marker)
                 var that = sect;
-                $(sect).animate({ top: yPos}, 250);
+                $(sect).animate({ top: yPos }, 250);
                 $(sect).show(0).delay(250);
                 prevTop = yPos;
                 prevEnd = yPos + $(sect).outerHeight();
             }
 
             // set position of previous sections
-            if (selSection > 0){
-                for (var i = selSection - 1; i >= 0; i--){
+            if (selSection > 0) {
+                for (var i = selSection - 1; i >= 0; i--) {
                     var sect = Jupyter.sidebar.sections[i].element
                     var marker = Jupyter.sidebar.sections[i].marker
                     var showing = Jupyter.sidebar.sections[i].showing
-                    if (! showing) {
+                    if (!showing) {
                         continue
                     }
                     var yPos = getYPos(marker)
-                    if (prevTop){
+                    if (prevTop) {
                         yPos = Math.min(prevTop - $(sect).outerHeight() - 15, yPos)
                     }
                     var that = sect;
-                    $(sect).animate({ top: yPos}, 250);
+                    $(sect).animate({ top: yPos }, 250);
                     $(sect).show(0).delay(250);
                     prevTop = yPos;
                 }
             }
 
             // set position of following sections
-            if (selSection < Jupyter.sidebar.sections.length - 1){
-                for (var i = selSection + 1; i < Jupyter.sidebar.sections.length; i++){
+            if (selSection < Jupyter.sidebar.sections.length - 1) {
+                for (var i = selSection + 1; i < Jupyter.sidebar.sections.length; i++) {
                     var sect = Jupyter.sidebar.sections[i].element
                     var marker = Jupyter.sidebar.sections[i].marker
                     var showing = Jupyter.sidebar.sections[i].showing
-                    if (! showing) {
+                    if (!showing) {
                         continue
                     }
                     var yPos = getYPos(marker)
-                    if (prevEnd){
+                    if (prevEnd) {
                         yPos = Math.max(prevEnd + 15, yPos)
                     }
                     var that = sect;
-                    $(sect).animate({ top: yPos}, 250);
+                    $(sect).animate({ top: yPos }, 250);
                     $(sect).show(0).delay(250);
                     prevEnd = yPos + $(sect).outerHeight();
                 }
             }
 
             // TODO determine why adding this line broke multi-cell selection
-            if (selSection >= 0){
-                if (Jupyter.sidebar.sections[selSection].cells.length > 0){
+            if (selSection >= 0) {
+                if (Jupyter.sidebar.sections[selSection].cells.length > 0) {
                     // Jupyter.sidebar.sections[selSection].cells[0].focus_editor()
                 }
             }
@@ -675,15 +670,15 @@ define([
                 var sect = Jupyter.sidebar.sections[i].element
                 var marker = Jupyter.sidebar.sections[i].marker
                 var showing = Jupyter.sidebar.sections[i].showing
-                if (! showing) {
+                if (!showing) {
                     continue
                 }
                 var yPos = getYPos(marker)
-                if (prevEnd){
+                if (prevEnd) {
                     yPos = Math.max(prevEnd + 15, yPos)
                 }
                 var that = sect;
-                $(sect).animate({ top: yPos}, 250);
+                $(sect).animate({ top: yPos }, 250);
                 $(sect).show(0).delay(250);
                 prevEnd = yPos + $(sect).outerHeight();
             }
@@ -711,7 +706,7 @@ define([
     }
 
 
-// PLACEHOLDERS FOR HIDDEN CELLS
+    // PLACEHOLDERS FOR HIDDEN CELLS
     Sidebar.prototype.addPlaceholderAfterElementWithIds = function(elem, cell_ids, serial_lines) {
         /* Add the placeholder used to open a group of hidden cells
 
@@ -728,9 +723,9 @@ define([
         if (markerMetadata) {
             for (var j = 0; j < markerMetadata.length; j++) {
                 overlap = markerMetadata[j].ids.filter((n) => cell_ids.includes(n))
-                if(overlap.length > 0){
+                if (overlap.length > 0) {
                     var first_stored = markerMetadata[j].markerName
-                    // var first_showing = markerMetadata[j].showing
+                        // var first_showing = markerMetadata[j].showing
                     break
                 }
             }
@@ -744,7 +739,7 @@ define([
             .append($('<div>')
                 .addClass('hide-marker')
                 .data('ids', cell_ids.slice())
-                .click(function(event){
+                .click(function(event) {
 
                     var that = this;
                     var sectionIndex = $(this).data('sectionIndex')
@@ -766,41 +761,39 @@ define([
                     var firstCell = Jupyter.sidebar.sections[secIndex].cells[0]
                     firstCell.events.trigger('select.Cell', {
                         'cell': firstCell.nb_cell,
-                        'extendSelection':event.shiftKey
+                        'extendSelection': event.shiftKey
                     });
                 })
-                .hover(function(event){
-                    JanusUtils.showMinimap(event, this)
-                },
-                function(event){
-                    JanusUtils.hideMinimap(event, this)
-                })
-                .mousemove( function(event){
+                .hover(function(event) {
+                        JanusUtils.showMinimap(event, this)
+                    },
+                    function(event) {
+                        JanusUtils.hideMinimap(event, this)
+                    })
+                .mousemove(function(event) {
                     JanusUtils.moveMinimap(event, this);
-                }
-                )
+                })
                 .append($('<div>')
                     .addClass('hide-label')
-                    .click(function(event){
+                    .click(function(event) {
                         enableVersionNameEditing(this)
                         event.stopPropagation()
                     })
-                    .focusout(function(){
+                    .focusout(function() {
                         disableVersionNameEditing(this)
                     })
-                    .hover(function(event){
-                        this.style.color = "#333"
-                        this.style.background = "#DDD"
-                    },
-                    function(event){
-                        this.style.color = ""
-                        this.style.background = ""
-                    })
-                    .text(function(){
-                        if(first_stored == "" || first_stored == "Hidden Cells"){
+                    .hover(function(event) {
+                            this.style.color = "#333"
+                            this.style.background = "#DDD"
+                        },
+                        function(event) {
+                            this.style.color = ""
+                            this.style.background = ""
+                        })
+                    .text(function() {
+                        if (first_stored == "" || first_stored == "Hidden Cells") {
                             return "Hidden Cells"
-                        }
-                        else{
+                        } else {
                             return first_stored
                         }
                     })
@@ -808,11 +801,11 @@ define([
                 )
                 .append($('<div>')
                     .addClass('hide-text')
-                    .text(serial_lines +  " lines")
+                    .text(serial_lines + " lines")
                     .append($('<div>')
                         .addClass('fa fa-angle-right hide-arrow')))
-                )
             )
+        )
     }
 
 
@@ -826,8 +819,7 @@ define([
             var markerLabels = $(hideMarkers[i]).find('.hide-label')
             if (markerLabels.length > 0) {
                 var markerName = markerLabels[0].innerHTML
-            }
-            else {
+            } else {
                 var markerName = ''
             }
             var showing = false;
@@ -856,7 +848,7 @@ define([
         $('.hide-marker').removeClass('active')
         $('.hidden-code').removeClass('active')
         $('.hidden-output').removeClass('active')
-        if(marker != null){
+        if (marker != null) {
             $(marker).addClass('active')
         }
     }
@@ -884,14 +876,14 @@ define([
 
         element.contentEditable = false;
         Jupyter.notebook.keyboard_manager.command_mode();
-        if(element.innerHTML == "" || element.innerHTML == "Hidden Cells"){
+        if (element.innerHTML == "" || element.innerHTML == "Hidden Cells") {
             element.innerHTML = "Hidden Cells"
         }
 
         if (section) {
             // set title on main notebook
             var markerTitles = $(section.marker).find('.hide-label')
-            if (markerTitles.length > 0){
+            if (markerTitles.length > 0) {
                 markerTitles[0].innerHTML = element.innerHTML
             }
         } else {
@@ -910,6 +902,8 @@ define([
     function createSidebar() {
         /* create a new sidebar element */
 
+        console.log('Creating Sidebar instance for notebook ...');
+
         return new Sidebar(Jupyter.notebook);
     }
 
@@ -920,7 +914,7 @@ define([
     }
 
 
-    return{
+    return {
         createSidebar: createSidebar
     };
 

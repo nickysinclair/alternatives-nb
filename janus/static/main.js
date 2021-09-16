@@ -10,9 +10,7 @@ define([
     'base/js/events',
     '../janus/patch',
     '../janus/sidebar',
-    '../janus/versions',
     '../janus/hide',
-    '../janus/history',
     '../janus/ui'
 ], function(
     require,
@@ -21,14 +19,14 @@ define([
     events,
     JanusPatch,
     JanusSidebar,
-    JanusVersions,
     JanusHide,
-    JanusHistory,
     JanusUI
-){
+) {
 
     function loadCSS() {
         /* Load css for the extension */
+
+        console.log('Loading CSS from main.css ...');
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -41,16 +39,18 @@ define([
     function loadJanusPostNotebook() {
         /* run steps that require cells to already be loaded */
 
+        console.log('Loading Janus ....');
+
         JanusPatch.initializeJanusMetadata();
         JanusUI.renderJanusUI();
-        JanusVersions.initializeVersionMarkers();
         JanusHide.initializeVisibility();
         Jupyter.sidebar.updateHiddenCells();
-        JanusHistory.prepHistoryTracking();
+
+        console.log('Janus loaded!');
     }
 
 
-    function loadExtension(){
+    function loadExtension() {
         /* Called as extension loads and notebook opens */
 
         loadCSS();
