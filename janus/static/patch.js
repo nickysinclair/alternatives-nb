@@ -57,7 +57,7 @@ define([
                 this.metadata.janus.source_hidden ||
                 this.metadata.janus.output_hidden
             ) {
-                // TODO find more robust way to find placeholder associated with thei cell
+                // TODO find more robust way to find placeholder associated with the cell
                 $(this.element).nextAll(".hide-marker").first().addClass("active");
                 if (!Jupyter.sidebar.collapsed && this.sb_cell != undefined) {
                     this.sb_cell.selected = true;
@@ -83,7 +83,7 @@ define([
 
         var oldCellUnselect = Cell.Cell.prototype.unselect;
         Cell.Cell.prototype.unselect = function() {
-            // need to return context object so mult-cell selection works
+            // need to return context object so i-cell selection works
             var cont = oldCellUnselect.apply(this, arguments);
 
             // update version markers, but don't think we need to do this will another cell being selected
@@ -403,7 +403,7 @@ define([
             oldPasteBelow.apply(this, arguments);
         };
 
-        // Next, listen for broswer-initiated (e.g. hotkey) cut, copy, paste events
+        // Next, listen for browser-initiated (e.g. hotkey) cut, copy, paste events
         document.addEventListener("cut", function() {
             if (Jupyter.notebook.mode == "command") {
                 var ts = JanusUtils.getTimeAndSelection();
@@ -642,7 +642,6 @@ define([
         patchCommandMode();
         patchUpdateSoftSelection();
         patchCutCopyPaste();
-        //patchKeydown();
     }
 
     return {

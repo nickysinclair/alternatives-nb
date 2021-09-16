@@ -6,10 +6,9 @@ hiding cells and tracking changes
 define([
     "jquery",
     "base/js/namespace",
-    "../janus/comment",
     "../janus/hide",
     "../janus/comment",
-], function($, Jupyter, JanusComment, JanusHide, JanusComment) {
+], function($, Jupyter, JanusHide, JanusComment) {
     function addItemToMenu(menu, id, text, click) {
         /* add <li> to menu
 

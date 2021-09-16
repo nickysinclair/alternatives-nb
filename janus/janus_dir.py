@@ -11,6 +11,7 @@ from hashlib import sha1
 
 # TODO check if directory assignment works on Windows machines
 
+
 def default_storage_dir():
     """
     return default directory for storing notebook history data
@@ -44,7 +45,8 @@ def find_storage_dir():
 
     # determine if user has overridden default directory in config file
     user_dir = os.path.expanduser('~')
-    config_path = os.path.join(user_dir, '.jupyter', 'nbconfig', 'notebook.json')
+    config_path = os.path.join(
+        user_dir, '.jupyter', 'nbconfig', 'notebook.json')
     filename = os.path.expanduser(config_path)
     if os.path.isfile(filename):
         with open(filename) as data_file:
@@ -69,6 +71,6 @@ def hash_path(path):
     path: (str) full path to notebook
     """
 
-    # only need first 8 charachters of hash to be uniquely identified
+    # only need first 8 characters of hash to be uniquely identified
     h = sha1(path.encode())
     return h.hexdigest()[0:8]

@@ -269,7 +269,7 @@ define([
                 });
             }
 
-            // propigate edits in sidebar cell to main notebook cell
+            // propagate edits in sidebar cell to main notebook cell
             newCell.code_mirror.on('change', function() {
                 if (newCell.nb_cell) {
                     newCell.nb_cell.set_text(newCell.get_text())
@@ -292,7 +292,7 @@ define([
             selCell.focus_editor();
         }
 
-        // make sure notebook does not scroll erraticly due to rendering new sections
+        // make sure notebook does not scroll erratically due to rendering new sections
         $('#site').scrollTop(siteTop)
 
     }
@@ -438,7 +438,7 @@ define([
             var sectionIndex = $(markers[i]).data('sectionIndex');
             var matchID = matchIDs(markerIDs, sectionIndex, oldSectionIDs);
 
-            // reuse an exisitng section
+            // reuse an existing section
             if (matchID >= 0) {
 
                 // track that this section has been found
@@ -716,7 +716,7 @@ define([
             serial_lines: number of lines of code in this section
         */
 
-        // get placholder name and showing status from metadata, if present
+        // get placeholder name and showing status from metadata, if present
         var markerMetadata = Jupyter.notebook.metadata.janus.janus_markers;
         var first_stored = '';
         var first_showing = false
@@ -731,7 +731,7 @@ define([
             }
         }
 
-        // add the placholder to the DOM
+        // add the placeholder to the DOM
         var place = elem.after($('<div>')
             .addClass('hide-container')
             .append($('<div>')

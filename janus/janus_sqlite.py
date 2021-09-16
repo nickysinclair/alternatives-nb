@@ -13,6 +13,7 @@ from threading import Timer
 
 from janus.janus_diff import check_for_nb_diff
 
+
 class DbManager(object):
     def __init__(self, db_path):
 
@@ -31,7 +32,6 @@ class DbManager(object):
 
         # create db tables if they don't already exist
         self.create_initial_tables()
-
 
     def create_initial_tables(self):
         """
@@ -65,12 +65,11 @@ class DbManager(object):
         self.conn.commit()
         self.conn.close()
 
-
     def record_nb_config(self, t, nb_name, cell_order, version_order):
         """
         Record new notebook configuration
 
-        t: (int) time when action triggering this new configuration occured
+        t: (int) time when action triggering this new configuration occurred
         nb_name: (str) hashed full path to the notebook
         cell_order: (list) strings of unique cell identifiers
         version_order: (list) strings of unique cell version identifiers
@@ -81,12 +80,11 @@ class DbManager(object):
         self.nb_queue.append(nb_data_tuple)
         self.update_timer()
 
-
     def record_cell(self, t, cell_id, version_id, cell_data):
         """
         Record new cell version
 
-        t: (int) time when action triggering this new cell occured
+        t: (int) time when action triggering this new cell occurred
         cell_id: (str) unique cell identifier
         version_id: (str) unique cell version identifier
         cell_data: (obj) JSON representation of the new cell version
@@ -95,10 +93,10 @@ class DbManager(object):
         # save the data to the database queue
         cell_data['metadata']['janus']['versions'] = []
         cell_data['metadata']['janus']['named_versions'] = []
-        cell_data_tuple = (t, str(cell_id), str(version_id), pickle.dumps(cell_data))
+        cell_data_tuple = (t, str(cell_id), str(
+            version_id), pickle.dumps(cell_data))
         self.cell_queue.append(cell_data_tuple)
         self.update_timer()
-
 
     def record_action(self, action_data, hashed_path):
         """
@@ -112,10 +110,10 @@ class DbManager(object):
         t = action_data['time']
         name = action_data['name']
         selected_index = action_data['index']
-        selected_indicies = action_data['indices']
+        selected_indices = action_data['indices']
         cells = action_data['model']['cells']
         action_data_tuple = (str(t), str(hashed_path), str(name), str(selected_index),
-                            str(selected_indicies))
+                             str(selected_indices))
         self.action_queue.append(action_data_tuple)
 
         # check for new cells or nb_configs as a result of this action
@@ -125,7 +123,6 @@ class DbManager(object):
         if name == 'notebook-closed':
             self.commit_queues()
         self.update_timer()
-
 
     def record_log(self, log_data, nb_name):
         """
@@ -141,10 +138,9 @@ class DbManager(object):
         sel_id = log_data['id']
         sel_ids = log_data['ids']
         log_data_tuple = (str(t), str(nb_name), str(name), str(sel_id),
-                            str(sel_ids))
+                          str(sel_ids))
         self.log_queue.append(log_data_tuple)
         self.update_timer()
-
 
     def record_comment(self, comment_data, nb_name):
         """
@@ -159,7 +155,6 @@ class DbManager(object):
         self.comment_queue.append(comment_data_tuple)
         self.update_timer()
 
-
     def commit_queues(self):
         """
         commit any data in queues to the database We queue data until there is
@@ -170,11 +165,16 @@ class DbManager(object):
         self.c = self.conn.cursor()
 
         try:
-            self.c.executemany('INSERT INTO actions VALUES (?,?,?,?,?)', self.action_queue)
-            self.c.executemany('INSERT INTO cells VALUES (?,?,?,?)', self.cell_queue)
-            self.c.executemany('INSERT INTO nb_configs VALUES (?,?,?,?)', self.nb_queue)
-            self.c.executemany('INSERT INTO janus_log VALUES (?,?,?,?,?)', self.log_queue)
-            self.c.executemany('INSERT INTO comments VALUES (?,?,?)', self.comment_queue)
+            self.c.executemany(
+                'INSERT INTO actions VALUES (?,?,?,?,?)', self.action_queue)
+            self.c.executemany(
+                'INSERT INTO cells VALUES (?,?,?,?)', self.cell_queue)
+            self.c.executemany(
+                'INSERT INTO nb_configs VALUES (?,?,?,?)', self.nb_queue)
+            self.c.executemany(
+                'INSERT INTO janus_log VALUES (?,?,?,?,?)', self.log_queue)
+            self.c.executemany(
+                'INSERT INTO comments VALUES (?,?,?)', self.comment_queue)
 
             self.conn.commit()
             self.conn.close()
@@ -186,7 +186,6 @@ class DbManager(object):
         except:
             self.conn.rollback()
             raise
-
 
     def update_timer(self):
         """
@@ -201,7 +200,6 @@ class DbManager(object):
         self.commitTimer = Timer(2.0, self.commit_queues)
         self.commitTimer.start()
 
-
     def execute_search(self, search):
         """
         execute a particular search against the database
@@ -215,7 +213,6 @@ class DbManager(object):
         rows = self.c.fetchall()
         return rows
 
-
     def get_comments(self):
         """
         Return a list of all comments
@@ -224,7 +221,6 @@ class DbManager(object):
         search = "SELECT * FROM comments"
         rows = self.execute_search(search)
         return rows
-
 
     def get_nb_configs(self, path, start, end):
         """
@@ -236,20 +232,21 @@ class DbManager(object):
         matched_configs = []
 
         # look for nb_configs in the queue
-        queued_configs = [q for q in self.nb_queue if q[1] == nb_name].reverse()
+        queued_configs = [
+            q for q in self.nb_queue if q[1] == nb_name].reverse()
         if(queued_configs):
             for q in queued_configs:
                 matched_configs.append(q)
 
         # look for older configs in the database
-        search = "SELECT * FROM nb_configs WHERE nb_name = \'" + path + "\' AND time BETWEEN " + str(start) + " and " + str(end)
+        search = "SELECT * FROM nb_configs WHERE nb_name = \'" + path + \
+            "\' AND time BETWEEN " + str(start) + " and " + str(end)
         rows = self.execute_search(search)
         for row in rows:
             matched_configs.append(row)
 
         matched_configs.sort(key=lambda x: x[0])
         return matched_configs
-
 
     def get_last_nb_config(self, nb_name):
         """
@@ -264,14 +261,14 @@ class DbManager(object):
 
         # Look for last nb_config in the database
         else:
-            search = "SELECT * FROM nb_configs WHERE nb_name = \'" + nb_name + "\' ORDER BY time DESC LIMIT 1"
+            search = "SELECT * FROM nb_configs WHERE nb_name = \'" + \
+                nb_name + "\' ORDER BY time DESC LIMIT 1"
             rows = self.execute_search(search)
 
             if len(rows) > 0:
                 return rows[0]
             else:
                 return []
-
 
     def get_last_cell_version(self, cell_id):
         """
@@ -292,8 +289,7 @@ class DbManager(object):
             if len(rows) > 0:
                 return rows[-1]
             else:
-                return (0,"","","")
-
+                return (0, "", "", "")
 
     def get_all_cell_versions(self, cell_id):
         """
@@ -303,18 +299,19 @@ class DbManager(object):
         """
 
         # look for versions of a particular cell in the queue
-        matched_versions = [q for q in self.cell_queue if q[2] == cell_id].reverse()
+        matched_versions = [
+            q for q in self.cell_queue if q[2] == cell_id].reverse()
         if not matched_versions:
             matched_versions = []
 
         # look for versions of the cell in the database
-        search = "SELECT * FROM cells WHERE cell_id = \'" + cell_id + "\' ORDER BY time DESC"
+        search = "SELECT * FROM cells WHERE cell_id = \'" + \
+            cell_id + "\' ORDER BY time DESC"
         rows = self.execute_search(search)
         for row in rows:
             matched_versions.append(row)
 
         return matched_versions
-
 
     def get_cell_history(self, path, start, end, cell_id):
         """
@@ -329,13 +326,15 @@ class DbManager(object):
         matched_versions = []
 
         # look for nb_configs in the queue
-        queued_versions = [q for q in self.cell_queue if q[1] == cell_id].reverse()
+        queued_versions = [
+            q for q in self.cell_queue if q[1] == cell_id].reverse()
         if(queued_versions):
             for q in queued_versions:
                 matched_versions.append(q)
 
         # look for older configs in the database
-        search = "SELECT * FROM cells WHERE cell_id = \'" + cell_id + "\' AND time BETWEEN " + str(start) + " and " + str(end)
+        search = "SELECT * FROM cells WHERE cell_id = \'" + cell_id + \
+            "\' AND time BETWEEN " + str(start) + " and " + str(end)
         rows = self.execute_search(search)
         for row in rows:
             matched_versions.append(row)
@@ -344,7 +343,7 @@ class DbManager(object):
         version_arr = []
         for m in matched_versions:
             v_dict = {
-                "name":"",
+                "name": "",
                 "cell_id": cell_id,
                 "version_id": m[2],
                 "content": pickle.loads(m[3])
@@ -352,7 +351,6 @@ class DbManager(object):
             version_arr.append(v_dict)
 
         return version_arr
-
 
     def get_versions(self, version_ids):
         """
@@ -371,7 +369,8 @@ class DbManager(object):
             version_ids = str(tuple(version_ids))
             search = "SELECT * FROM cells WHERE version_id in " + version_ids
         else:
-            search = "SELECT * FROM cells WHERE version_id = \'" + version_ids[0] + "\'"
+            search = "SELECT * FROM cells WHERE version_id = \'" + \
+                version_ids[0] + "\'"
         rows = self.execute_search(search)
         for row in rows:
             matched_in_queue.append(row)
@@ -382,8 +381,7 @@ class DbManager(object):
 
         return cell_dict
 
-
-    def export_data_and_clean(self, nb_name, drop_all = False):
+    def export_data_and_clean(self, nb_name, drop_all=False):
         """
         copy cells table into analysis table that will scrub private nb data but keep
         relevant data like metadata, loc, counts, etc. for analysis
@@ -391,7 +389,7 @@ class DbManager(object):
         """
         search = '''SELECT time, cell_id, version_id, cell_data FROM cells WHERE 1'''
         insert = '''INSERT INTO cleaned_cells VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
-        tuplst = []
+        tuples_list = []
         self.conn = sqlite3.connect(self.db_path)
         self.c = self.conn.cursor()
         try:
@@ -402,30 +400,40 @@ class DbManager(object):
                 cell_id = r[1]
                 version_id = r[2]
                 cucumber = pickle.loads(r[3])
-                data_dict = {"meta_data": [], "line_count": 0, "function_count":0,
-                    "cell_count":0, "lines_of_code":0, "markdown_word_count":0, "output_count":0, "types":{"markdown":0,"code":0}}
+                data_dict = {"meta_data": [], "line_count": 0, "function_count": 0,
+                             "cell_count": 0, "lines_of_code": 0, "markdown_word_count": 0, "output_count": 0, "types": {"markdown": 0, "code": 0}}
                 # for d in cucumber:
                 #     for c in d:
-                data_dict["meta_data"].append(cucumber["metadata"])  # metadata obj
+                data_dict["meta_data"].append(
+                    cucumber["metadata"])  # metadata obj
                 data_dict["cell_count"] += 1  # how many individual cells
-                data_dict["types"][cucumber["cell_type"]] += 1  # how many markdown and code cells
+                # how many markdown and code cells
+                data_dict["types"][cucumber["cell_type"]] += 1
                 if cucumber["cell_type"] == "code":
-                    data_dict["lines_of_code"] += len(cucumber["source"].splitlines(True))  # LOC for code cells
-                    data_dict["output_count"] += len(cucumber["outputs"])  # count for **amount** of output
+                    # LOC for code cells
+                    data_dict["lines_of_code"] += len(
+                        cucumber["source"].splitlines(True))
+                    # count for **amount** of output
+                    data_dict["output_count"] += len(cucumber["outputs"])
                 elif cucumber["cell_type"] == "markdown":
-                    data_dict["markdown_word_count"] += len(re.findall("(\S+)", cucumber["source"]))
-                data_dict["line_count"] += len(cucumber["source"].splitlines(True))  # count for all cells
+                    data_dict["markdown_word_count"] += len(
+                        re.findall("(\S+)", cucumber["source"]))
+                # count for all cells
+                data_dict["line_count"] += len(
+                    cucumber["source"].splitlines(True))
 
-                        # TODO count functions for all code cells? (AST analysis needed)
-                        # TODO How to tell the different types of output? (current counted)
-                        # TODO REMOVE DATA COLUMN?? (currently purged)!!
-                        # TODO what is content tag? and what does the code strings inside represent?
-                row_tupe = (str(time), str(cell_id), str(version_id), "CLEARED", str(data_dict["meta_data"]),
-                    str(data_dict["line_count"]), str(data_dict["function_count"]), str(data_dict["cell_count"]),
-                    str(data_dict["lines_of_code"]), str(data_dict["markdown_word_count"]), str(data_dict["output_count"]),
+                # TODO count functions for all code cells? (AST analysis needed)
+                # TODO How to tell the different types of output? (current counted)
+                # TODO REMOVE DATA COLUMN?? (currently purged)!!
+                # TODO what is content tag? and what does the code strings inside represent?
+                row_tuple = (str(time), str(cell_id), str(version_id), "CLEARED", str(data_dict["meta_data"]),
+                             str(data_dict["line_count"]), str(
+                    data_dict["function_count"]), str(data_dict["cell_count"]),
+                    str(data_dict["lines_of_code"]), str(
+                    data_dict["markdown_word_count"]), str(data_dict["output_count"]),
                     str(data_dict["types"]))
-                tuplst.append(row_tupe)
-            self.c.executemany(insert, tuplst)
+                tuples_list.append(row_tuple)
+            self.c.executemany(insert, tuples_list)
             self.conn.commit()
             self.conn.close()
             print("exported")

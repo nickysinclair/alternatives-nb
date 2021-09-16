@@ -13,6 +13,7 @@ import pickle
 # TODO implement smarter cell comparison that ignores trivial difference of
 # matplotlib figures having a different memory location
 
+
 def check_for_nb_diff(t, hashed_path, cells, db):
     """
     Check for differences between current and previous version of the notebook
@@ -43,14 +44,15 @@ def check_for_nb_diff(t, hashed_path, cells, db):
             new_cell_order.append(cell_id)
             new_version_order.append(version_id)
 
-        # create new db entry for this notebook confiburation
+        # create new db entry for this notebook configuration
         db.record_nb_config(t, hashed_path, new_cell_order, new_version_order)
         return
 
     # get the cell order and cells of the last notebook configuration
     last_cell_order = ast.literal_eval(last_nb_config[2])
     last_version_order = ast.literal_eval(last_nb_config[3])
-    last_cells = [db.get_last_cell_version(cell_id) for cell_id in last_cell_order]
+    last_cells = [db.get_last_cell_version(
+        cell_id) for cell_id in last_cell_order]
 
     # for each cell in the current notebook
     for c in cells:
@@ -92,10 +94,11 @@ def check_for_nb_diff(t, hashed_path, cells, db):
             new_version_order.append(version_id)
 
     # save a new nb config if different from the last one
-    if ( new_version_order != last_version_order ):
+    if (new_version_order != last_version_order):
         db.record_nb_config(t, hashed_path, new_cell_order, new_version_order)
 
-def cells_different(cell_a, cell_b, compare_outputs = True):
+
+def cells_different(cell_a, cell_b, compare_outputs=True):
     """
     Return true/false if two cells are the same
 
@@ -106,7 +109,7 @@ def cells_different(cell_a, cell_b, compare_outputs = True):
 
     # check if cell type or source is different
     if (cell_a["cell_type"] != cell_b["cell_type"]
-        or cell_a["source"] != cell_b["source"]):
+            or cell_a["source"] != cell_b["source"]):
         return True
 
     # otherwise compare outputs if it is a code cell
@@ -123,12 +126,12 @@ def cells_different(cell_a, cell_b, compare_outputs = True):
             if cell_b_outs[j]['output_type'] != cell_a_outs[j]['output_type']:
                 return True
             # and that the relevant data matches
-            elif((cell_a_outs[j]['output_type'] in ["display_data","execute_result"]
-                and cell_a_outs[j]['data'] != cell_b_outs[j]['data'])
-                or (cell_a_outs[j]['output_type'] == "stream"
-                and cell_a_outs[j]['text'] != cell_b_outs[j]['text'])
-                or (cell_a_outs[j]['output_type'] == "error"
-                and cell_a_outs[j]['evalue'] != cell_b_outs[j]['evalue'])):
+            elif((cell_a_outs[j]['output_type'] in ["display_data", "execute_result"]
+                  and cell_a_outs[j]['data'] != cell_b_outs[j]['data'])
+                 or (cell_a_outs[j]['output_type'] == "stream"
+                     and cell_a_outs[j]['text'] != cell_b_outs[j]['text'])
+                 or (cell_a_outs[j]['output_type'] == "error"
+                     and cell_a_outs[j]['evalue'] != cell_b_outs[j]['evalue'])):
                 return True
 
     return False

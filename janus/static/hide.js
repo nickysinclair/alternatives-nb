@@ -13,12 +13,12 @@ define([
     $,
     Jupyter,
     JanusUtils
-){
+) {
 
     //TODO substantial duplicate code that could be put into helper functions
 
     function toggleSelCellsVisibility() {
-        /* toggle visiblity of all selected cells
+        /* toggle visibility of all selected cells
 
         use the visibility of the primary selected cell to set visibility for
         remainder of selection */
@@ -30,10 +30,10 @@ define([
         // get ids of selected cells and log the action
         var selID = selCell.metadata.janus.id
         var selIDs = []
-        for (var i = 0; i < selCells.length; i++){
+        for (var i = 0; i < selCells.length; i++) {
             selIDs.push(selCells[i].metadata.janus.id)
         }
-        if (primaryHidden){
+        if (primaryHidden) {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'show-cells', selID, selIDs);
         } else {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'hide-cells', selID, selIDs);
@@ -94,12 +94,12 @@ define([
         cell.metadata.janus.output_hidden = false;
 
         // update text with content from sidebar cell
-        if (cell.sb_cell){
+        if (cell.sb_cell) {
             cell.set_text(cell.sb_cell.get_text());
         }
         cell.render();
 
-        // update hidden source / ouptut markers
+        // update hidden source / output markers
         renderSourceMarker(cell);
         renderOutputMarker(cell);
 
@@ -119,10 +119,10 @@ define([
 
         var selID = selCell.metadata.janus.id
         var selIDs = []
-        for (var i = 0; i < selCells.length; i++){
+        for (var i = 0; i < selCells.length; i++) {
             selIDs.push(selCells[i].metadata.janus.id)
         }
-        if (showSource){
+        if (showSource) {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'show-source', selID, selIDs);
         } else {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'hide-source', selID, selIDs);
@@ -176,24 +176,22 @@ define([
         var outputArea = cell.element.find('div.output_wrapper')[0];
         var classes = "marker hidden-code fa fa-code";
 
-        if (cell.metadata.janus.source_hidden && ! cell.metadata.janus.cell_hidden) {
+        if (cell.metadata.janus.source_hidden && !cell.metadata.janus.cell_hidden) {
 
             JanusUtils.removeMarkerType('.hidden-code', outputArea);
             var marker = JanusUtils.addMarkerToElement(outputArea, classes);
             $(marker).data('ids', [cell.metadata.janus.id])
-                .hover(function(event){
-                    JanusUtils.showMinimap(event, this)
-                },
-                function(event){
-                    JanusUtils.hideMinimap(event, this)
-                })
-                .mousemove( function(event){
+                .hover(function(event) {
+                        JanusUtils.showMinimap(event, this)
+                    },
+                    function(event) {
+                        JanusUtils.hideMinimap(event, this)
+                    })
+                .mousemove(function(event) {
                     JanusUtils.moveMinimap(event, this);
-                }
-                )
+                })
             marker.onclick = function() { showCellInSidebar(cell, marker); };
-        }
-        else if (cell.cell_type == 'code') {
+        } else if (cell.cell_type == 'code') {
             JanusUtils.removeMarkerType('.hidden-code', outputArea);
         }
     }
@@ -209,10 +207,10 @@ define([
         // log the action
         var selID = selCell.metadata.janus.id
         var selIDs = []
-        for (var i = 0; i < selCells.length; i++){
+        for (var i = 0; i < selCells.length; i++) {
             selIDs.push(selCells[i].metadata.janus.id)
         }
-        if (showOutput){
+        if (showOutput) {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'show-output', selID, selIDs);
         } else {
             JanusUtils.logJanusAction(Jupyter.notebook, Date.now(), 'hide-output', selID, selIDs);
@@ -222,9 +220,9 @@ define([
         for (var i = 0; i < selCells.length; i++) {
 
             var numOutputs = selCells[i].output_area.outputs.length
-            if (numOutputs > 0){
+            if (numOutputs > 0) {
                 if (showOutput) {
-                    if (! selCells[i].metadata.janus.source_hidden) {
+                    if (!selCells[i].metadata.janus.source_hidden) {
                         // show whole cell
                         showCell(selCells[i])
                     } else {
@@ -244,7 +242,7 @@ define([
                     }
                 }
 
-            renderOutputMarker(selCells[i]);
+                renderOutputMarker(selCells[i]);
 
             }
         }
@@ -266,29 +264,28 @@ define([
         var classes = "marker hidden-output fa fa-area-chart";
         var selID = cell.metadata.janus.id
 
-        if (cell.metadata.janus.output_hidden && ! cell.metadata.janus.cell_hidden) {
+        if (cell.metadata.janus.output_hidden && !cell.metadata.janus.cell_hidden) {
 
             JanusUtils.removeMarkerType('.hidden-output', markerContainer);
             var marker = JanusUtils.addMarkerToElement(markerContainer, classes);
             $(marker).data('ids', [cell.metadata.janus.id])
-                .hover(function(event){
-                    JanusUtils.showMinimap(event, this)
-                },
-                function(event){
-                    JanusUtils.hideMinimap(event, this)
-                })
-                .mousemove( function(event){
+                .hover(function(event) {
+                        JanusUtils.showMinimap(event, this)
+                    },
+                    function(event) {
+                        JanusUtils.hideMinimap(event, this)
+                    })
+                .mousemove(function(event) {
                     JanusUtils.moveMinimap(event, this);
                 })
             marker.onclick = function() { showCellInSidebar(cell, marker); };
-        }
-        else if (cell.cell_type == 'code') {
+        } else if (cell.cell_type == 'code') {
             JanusUtils.removeMarkerType('.hidden-output', markerContainer);
         }
     }
 
 
-    function toggleAllSections(){
+    function toggleAllSections() {
         /* Show or hide all hide cell sections in the sidebar */
 
         if (Jupyter.sidebar.collapsed) {
@@ -309,7 +306,7 @@ define([
         /* hide source and outputs of all cells in nb with proper metadata */
 
         var cells = Jupyter.notebook.get_cells()
-        for ( i=0; i < cells.length; i++ ) {
+        for (i = 0; i < cells.length; i++) {
 
             // output hidden
             if (cells[i].metadata.janus.output_hidden) {
@@ -358,7 +355,8 @@ define([
         toggleSelCellsVisibility: toggleSelCellsVisibility,
         toggleSourceVisibility: toggleSourceVisibility,
         toggleOutputVisibility: toggleOutputVisibility,
-        initializeVisibility, initializeVisibility,
+        initializeVisibility,
+        initializeVisibility,
         toggleAllSections: toggleAllSections
     };
 

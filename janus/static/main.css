@@ -3,57 +3,9 @@ Janus: Jupyter Notebook extension that helps users keep clean notebooks by
 hiding cells and tracking changes
 */
 
-/* HISTORY MODAL */
-#history-label{
-    margin-left: 8px;
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-#history-label a{
-    color: #777777;
-    cursor: pointer;
-}
-
-#revision{
-    width: 100%;
-    height: 16px;
-    margin-bottom: 12px;
-}
-
-#rev_num{
-    width: 90px;
-    height: 16px;
-    float: left;
-}
-
-#rev_time{
-    font-weight: 600;
-    height: 16px;
-}
-
-#modal-slide{
-    height: 4px;
-    margin-bottom: 12px;
-    border: 0px;
-    background: #efefef;
-}
-
-#modal-slide.ui-slider-range{
-    top: 0px;
-    height: 3px;
-}
-
-#modal-slide a.ui-slider-handle{
-    top: -6px;
-    width: 8px;
-    margin-left: -6px;
-    background: #ffffff;
-}
-
 
 /* COMMENT MODAL  */
+
 #comment-box {
     width: 100%;
     font-size: 1.2em;
@@ -66,17 +18,24 @@ hiding cells and tracking changes
     color: #999;
 }
 
-#past-comments p{
+#past-comments p {
     line-height: 1.8em;
 }
+
+
+/* USED BY utils.showMiniMap - NOT SURE IF NEEDED */
 
 .new-version {
     background-color: #E2FFEA;
 }
 
 
-/* HIDDEN CELL MARKERS */
-.hide-container{
+/*
+ * HIDDEN SECTION CELL:
+ * CONTAINER WITH SPACER, ARROW, AND CELL ITSELF (AKA MARKER)
+ */
+
+.hide-container {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -99,12 +58,12 @@ hiding cells and tracking changes
     background-color: #DFF0FD;
 }
 
-.hide-arrow{
+.hide-arrow {
     padding: 0px 4px 0px 8px;
     font-size: 1.3em;
 }
 
-.hide-spacer{
+.hide-spacer {
     height: 30px;
     margin-top: 10px;
     min-width: 13.2ex;
@@ -122,7 +81,7 @@ hiding cells and tracking changes
     cursor: default;
 }
 
-.hide-label{
+.hide-label {
     height: 26px;
     padding: 3px;
     min-width: 80px;
@@ -131,7 +90,7 @@ hiding cells and tracking changes
     cursor: auto;
 }
 
-.hide-text{
+.hide-text {
     padding: 3px;
     height: 26px;
     float: right;
@@ -139,7 +98,7 @@ hiding cells and tracking changes
     border-radius: 1px;
 }
 
-.hide-marker{
+.hide-marker {
     height: 30px;
     padding: 1px 1px 0px;
     margin: 6px;
@@ -169,13 +128,22 @@ hiding cells and tracking changes
     flex: 1;
 }
 
-.marker-container{
+
+/* 
+ * WRAPS AROUND THE MARKER
+ * CREATED FOR OUTPUT HIDE (AND INPUT?)
+ */
+
+.marker-container {
     height: 24px;
     position: absolute;
     top: 2px;
     right: 2px;
     z-index: 10;
 }
+
+
+/* INPUT OR OUTPUT HIDDEN MARKERS */
 
 .marker {
     opacity: 0.6;
@@ -190,17 +158,17 @@ hiding cells and tracking changes
     float: left;
 }
 
-.marker:hover{
+.marker:hover {
     background: #ddd;
     opacity: 1.0;
 }
 
-.marker.placeholder{
+.marker.placeholder {
     margin: 4px 8px 5px 0px;
     float: right;
 }
 
-.marker.extra{
+.marker.extra {
     padding: 4px 4px 0px;
     background: #DDDDDD;
     opacity: 1.0;
@@ -208,21 +176,21 @@ hiding cells and tracking changes
     min-width: 14px
 }
 
-.marker.extra:hover{
+.marker.extra:hover {
     background: #CCCCCC;
 }
 
-.marker.summary{
+.marker.summary {
     padding: 4px 0px 0px;
 }
 
-.marker.version{
+.marker.version {
     padding: 3px 4px 0px;
     background: #CCCCCC;
     font-size: 1em;
 }
 
-.marker.hidden-code{
+.marker.hidden-code {
     padding: 4px 3px 0px;
     position: absolute;
     z-index: 10;
@@ -230,19 +198,19 @@ hiding cells and tracking changes
     right: 2px;
 }
 
-.marker.hidden-output{
+.marker.hidden-output {
     padding: 4px 3px 0px;
     float: right;
 }
 
-.marker.selected-version{
+.marker.selected-version {
     opacity: 1.0;
     border: 1px solid #666666;
     background-color: #dddddd;
     color: #666666;
 }
 
-.active{
+.active {
     opacity: 1.0;
     border: 1px solid #AAAAAA;
     background-color: #dddddd;
@@ -251,6 +219,7 @@ hiding cells and tracking changes
 
 
 /* SIDEBAR AND SECTIONS */
+
 #sidebar-container {
     position: absolute;
     top: 20px;
@@ -278,7 +247,7 @@ hiding cells and tracking changes
     padding: 15px;
 }
 
-.section-header{
+.section-header {
     height: 24px;
     margin-bottom: 5px;
     box-sizing: border-box;
@@ -319,7 +288,8 @@ hiding cells and tracking changes
 
 
 /* MINIMAP */
-#minimap{
+
+#minimap {
     width: 300px;
     background-color: white;
     overflow: hidden;
@@ -329,7 +299,7 @@ hiding cells and tracking changes
     -webkit-box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);
 }
 
-.mini-wrap{
+.mini-wrap {
     width: 600px;
     transform: scale(0.5);
     transform-origin: left top;

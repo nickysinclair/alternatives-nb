@@ -17,7 +17,7 @@ define([
     Cell,
     CodeCell,
     TextCell,
-){
+) {
 
     function getTimeAndSelection() {
         /* get time and selected cells */
@@ -99,7 +99,7 @@ define([
         newCell = null;
 
         // markdown cells
-        if(cellJSON.cell_type == 'markdown'){
+        if (cellJSON.cell_type == 'markdown') {
             newCell = new TextCell.MarkdownCell({
                 events: nb.events,
                 config: nb.config,
@@ -109,7 +109,7 @@ define([
             });
         }
         // code cells
-        else if(cellJSON.cell_type == 'code'){
+        else if (cellJSON.cell_type == 'code') {
             newCell = new CodeCell.CodeCell(nb.kernel, {
                 events: nb.events,
                 config: nb.config,
@@ -117,8 +117,7 @@ define([
                 notebook: nb,
                 tooltip: nb.tooltip,
             });
-        }
-        else if (cellJSON.cell_type = 'raw'){
+        } else if (cellJSON.cell_type = 'raw') {
             newCell = new TextCell.RawCell({
                 events: nb.events,
                 config: nb.config,
@@ -136,12 +135,12 @@ define([
     }
 
 
-// MINIMAP
+    // MINIMAP
     function showMinimap(event, el, modal = false) {
-        /* render rich tooltip with miniturized view of hidden cells
+        /* render rich tooltip with miniaturized view of hidden cells
 
         Args:
-            event: mouseout event that triggers hidding minimap
+            event: mouseout event that triggers hiding minimap
             el: placeholder element triggering event
             modal: wether we are showing this minimap over a modal
         */
@@ -165,14 +164,14 @@ define([
         }
 
         // get cells ready to copy to minimap
-        if (modal){
+        if (modal) {
             var cells = Jupyter.historyViewer.cells
         } else {
             var cells = Jupyter.notebook.get_cells()
         }
         var cells_to_copy = []
-        for(i=0; i<cells.length; i++){
-            if ( $.inArray( cells[i].metadata.janus.id, cell_ids ) > -1 ){
+        for (i = 0; i < cells.length; i++) {
+            if ($.inArray(cells[i].metadata.janus.id, cell_ids) > -1) {
                 cells_to_copy.push(cells[i])
             }
         }
@@ -189,7 +188,7 @@ define([
 
         // populate it with our cells
         // for each cell, create a new cell in the Sidebar with the same content
-        for (i = 0; i < cells_to_copy.length; i++){
+        for (i = 0; i < cells_to_copy.length; i++) {
 
             // add new cell to the sidebar
             var cell = cells_to_copy[i]
@@ -198,7 +197,7 @@ define([
             // append cells to minimap
             cellData = cell.toJSON();
             newCell = getDuplicateCell(cellData, nb)
-            if ($(cell.element).hasClass('new-version')){
+            if ($(cell.element).hasClass('new-version')) {
                 $(newCell.element).addClass('new-version')
             }
             newCell.code_mirror.setOption('readOnly', "nocursor");
@@ -212,10 +211,10 @@ define([
             }
 
             // hide output if needed
-            if(newCell.metadata.janus.source_hidden && ! newCell.metadata.janus.output_hidden){
+            if (newCell.metadata.janus.source_hidden && !newCell.metadata.janus.output_hidden) {
                 newCell.element.find("div.output_wrapper").hide();
             }
-            if(newCell.metadata.janus.output_hidden && ! newCell.metadata.janus.source_hidden){
+            if (newCell.metadata.janus.output_hidden && !newCell.metadata.janus.source_hidden) {
                 newCell.element.find("div.input").hide();
             }
         }
@@ -230,7 +229,7 @@ define([
         /* remove any mini-map divs
 
         Args:
-            event: mouseout event that triggers hidding minimap
+            event: mouseout event that triggers hiding minimap
             el: placeholder element triggering event
         */
 
@@ -243,7 +242,7 @@ define([
         /* move the minimap
 
         Args:
-            event: mouseout event that triggers hidding minimap
+            event: mouseout event that triggers hiding minimap
             el: placeholder element triggering event
         */
 
@@ -257,7 +256,7 @@ define([
         var miniWidth = $('#minimap').width()
 
         // ensure tooltip does not go off the page
-        if ((mouseRight + miniWidth) > siteWidth - 24 ) {
+        if ((mouseRight + miniWidth) > siteWidth - 24) {
             mouseRight = siteWidth - miniWidth - 24;
         }
 
@@ -287,7 +286,7 @@ define([
 
         // get url to send POST request
         var baseUrl = nb.base_url;
-        var nbUrl =  nb.notebook_path;
+        var nbUrl = nb.notebook_path;
         var url = utils.url_path_join(baseUrl, 'api/janus', nbUrl);
 
         // get data ready
@@ -301,8 +300,8 @@ define([
 
         // prepare POST settings
         var settings = {
-            processData : false,
-            type : 'POST',
+            processData: false,
+            type: 'POST',
             dataType: 'json',
             data: d,
             contentType: 'application/json',

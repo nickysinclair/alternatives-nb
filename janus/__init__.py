@@ -15,6 +15,7 @@ from notebook.base.handlers import IPythonHandler, path_regex
 from .janus_sqlite import DbManager
 from .janus_dir import find_storage_dir, create_dir, hash_path
 
+
 class JanusHandler(IPythonHandler):
     """Implements main handler for saving and retrieving notebook history."""
 
@@ -55,10 +56,11 @@ class JanusHandler(IPythonHandler):
             cells = self.db_manager.get_versions(version_ids)
             self.finish(json.dumps({'cells': cells}))
 
-        # or data about a cell's entrie history
+        # or data about a cell's entire history
         elif (query_type == 'cell_history'):
             cell_id = self.get_argument('cell_id', None, True)
-            versions = self.db_manager.get_cell_history(path, start, end, cell_id)
+            versions = self.db_manager.get_cell_history(
+                path, start, end, cell_id)
             self.finish(json.dumps({'versions': versions}))
 
         # or data about a comment / bug
@@ -144,5 +146,5 @@ def load_jupyter_server_extension(nb_app):
     web_app = nb_app.web_app
     host_pattern = '.*$'
     route_pattern = url_path_join(web_app.settings['base_url'],
-                                    r"/api/janus%s" % path_regex)
+                                  r"/api/janus%s" % path_regex)
     web_app.add_handlers(host_pattern, [(route_pattern, JanusHandler)])
