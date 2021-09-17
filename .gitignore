@@ -5,3 +5,4 @@ MANIFEST
 .ipynb_checkpoints/
 *.ipynb
 *.code-workspace
+*.nnb
