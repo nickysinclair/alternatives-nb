@@ -8,20 +8,27 @@ define([
     'jquery',
     'base/js/namespace',
     'base/js/events',
-    '../janus/patch',
-    '../janus/sidebar',
-    '../janus/hide',
-    '../janus/ui'
+    '../janus/metadata',
+    '../janus/headerUI',
 ], function(
     require,
     $,
     Jupyter,
     events,
-    JanusPatch,
-    JanusSidebar,
-    JanusHide,
-    JanusUI
+    litMetadata,
+    litHeaderUI,
 ) {
+
+    function injectPackages() {
+        /*
+         * Intended for fetching modules from the open web, but module not usable so far ...
+         */
+
+        var s = document.createElement("script");
+        s.type = "module"; // OR try text/javascript
+        s.src = "https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js";
+        $("head").append(s);
+    };
 
     function loadCSS() {
         /* Load css for the extension */
@@ -36,17 +43,15 @@ define([
     };
 
 
-    function loadJanusPostNotebook() {
+    function loadLitPostNotebook() {
         /* run steps that require cells to already be loaded */
 
-        console.log('Loading Janus ....');
+        console.log('Loading Literate Analytics ....');
 
-        JanusPatch.initializeJanusMetadata();
-        JanusUI.renderJanusUI();
-        JanusHide.initializeVisibility();
-        Jupyter.sidebar.updateHiddenCells();
+        litHeaderUI.renderLitUI();
+        litMetadata.setDefaultForkMetadata();
 
-        console.log('Janus loaded!');
+        console.log('Literate Analytics loaded!');
     }
 
 
@@ -54,14 +59,14 @@ define([
         /* Called as extension loads and notebook opens */
 
         loadCSS();
-        JanusSidebar.createSidebar();
-        JanusPatch.applyJanusPatches();
+        //JanusSidebar.createSidebar();
+        //JanusPatch.applyJanusPatches();
 
         // make sure notebook is fully loaded before interacting with it
         if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
-            loadJanusPostNotebook();
+            loadLitPostNotebook();
         }
-        events.on("notebook_loaded.Notebook", loadJanusPostNotebook);
+        events.on("notebook_loaded.Notebook", loadLitPostNotebook);
     }
 
 
