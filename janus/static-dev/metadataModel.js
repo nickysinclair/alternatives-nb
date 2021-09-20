@@ -2,6 +2,12 @@
  * Interfacing with JSON metadata.
  */
 
+// TODO : archiveAlternativeMetadata
+// TODO : deleteAlternativeSetMetadata
+// TODO : archiveAlternativeSetMetadata
+
+// TODO : addAlternativeMetadataToSet -- ??
+
 define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
     require,
     $,
@@ -16,6 +22,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
 
         var defaultAlternativeMetadata = {
             id: uuidv4(),
+            alternativeSet: "",
             alternativeStatus: "option",
             alternativeParent: "",
             alternativeChildren: [],
@@ -32,6 +39,8 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
 
         // Add alternative metadata within notebook metadata array
         Jupyter.notebook.metadata.lit.alternatives.push(defaultAlternativeMetadata);
+
+        return defaultAlternativeMetadata.id;
     }
 
     function setDefaultNotebookMetadata() {

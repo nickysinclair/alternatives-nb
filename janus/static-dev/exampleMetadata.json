@@ -1,0 +1,37 @@
+{
+    "cells": [],
+    "metadata": {
+        "kernelspec": {},
+        "language_info": {},
+        "lit": {
+            "alternatives": [{
+                "id": "53a68468-819c-4f40-b16f-742a0a54892d",
+                "alternativeSet": "594ed339-46ef-464a-894e-c924e53050d5",
+                "alternativeStatus": "option",
+                "alternativeParent": "5c3cab97-1fb4-407e-b55b-3ae1c6f5dfdb",
+                "alternativeChildren": [
+                    "4a8c5ae2-a6aa-43ef-8342-899097817345",
+                    "c4b67d5f-fe0e-4af4-b9d4-6fedb31ecf27"
+                ],
+                "alternativeReasoning": {
+                    "decisionRationale": [
+                        "methodology",
+                        "prior work",
+                        "data",
+                        "expertise",
+                        "communication",
+                        "sensitivity"
+                    ],
+                    "alternativesTrigger": [
+                        "opportunism",
+                        "systematicity",
+                        "robustness",
+                        "contingency"
+                    ]
+                }
+            }]
+        }
+    },
+    "nbformat": 0,
+    "nbminor": 0
+}

@@ -1,7 +1,6 @@
 /*
-Janus: Jupyter Notebook extension that helps users keep clean notebooks by
-hiding cells and tracking changes
-*/
+ * Defining toolbar buttons and menu, binding functions, and rendering UI
+ */
 
 define([
     "jquery",
@@ -10,7 +9,8 @@ define([
     function addItemToMenu(menu, id, text, click) {
         /*
          * add <li> to menu
-         * args:
+         *
+         * Args:
          *  - menu: menu item to append <li> to
          *  - id: css id
          *  - text: text to put on menuitem
@@ -26,7 +26,7 @@ define([
 
     // Placeholder function for menu/toolbar to work until actions created
     function logFunc() {
-        console.log('abc');
+        console.log("abc");
     }
 
     /* 
@@ -69,12 +69,7 @@ define([
         ],
     ];
 
-    function addItems(items) {
-        /*
-         * Function adding items to menu and toolbar according to data
-         * structure defined in `var items`
-         */
-
+    function setNavigationMenu() {
         // Create the navigation bar
         var navbar = $("#menubar .nav").first();
         navbar.append(
@@ -95,9 +90,22 @@ define([
         janusHeader.append(
             $("<ul>").addClass("dropdown-menu").attr("id", "janus-menu")
         );
+    };
+
+    function addItems(items) {
+        /*
+         * Function adding items to menu and toolbar according to data
+         * structure defined in `var items`
+         * 
+         * Args:
+         *  - items: JSON data defining available actions with UI buttons
+         */
 
         // Loop array of arrays and extract action information from dictionary
         // to render menu and buttons
+
+        setNavigationMenu();
+
         var janusMenu = $("#janus-menu");
         var prefix = "janus";
         var actionHandler = Jupyter.actions;
@@ -140,13 +148,13 @@ define([
     }
 
 
-    function renderLitUI() {
+    function renderHeaderUI() {
         /* Render both menu items and toolbar buttons */
 
         addItems(items);
     }
 
     return {
-        renderLitUI: renderLitUI,
+        renderHeaderUI: renderHeaderUI,
     };
 });

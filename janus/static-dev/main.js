@@ -4,24 +4,25 @@ hiding cells and tracking changes
 */
 
 define([
-    'require',
-    'jquery',
-    'base/js/namespace',
-    'base/js/events',
-    '../janus/metadata',
-    '../janus/headerUI',
+    "require",
+    "jquery",
+    "base/js/namespace",
+    "base/js/events",
+    "../janus/metadataModel",
+    "../janus/headerView",
 ], function(
     require,
     $,
     Jupyter,
     events,
-    litMetadata,
-    litHeaderUI,
+    metadataModel,
+    headerView,
 ) {
 
     function injectPackages() {
         /*
-         * Intended for fetching modules from the open web, but module not usable so far ...
+         * Intended for fetching modules from the open web, but module not 
+         * usable so far ...
          */
 
         var s = document.createElement("script");
@@ -31,9 +32,9 @@ define([
     };
 
     function loadCSS() {
-        /* Load css for the extension */
+        /* Load CSS for the extension */
 
-        console.log('Loading CSS from main.css ...');
+        console.log("Loading CSS from main.css ...");
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -43,15 +44,15 @@ define([
     };
 
 
-    function loadLitPostNotebook() {
-        /* run steps that require cells to already be loaded */
+    function loadExtensionPostNotebook() {
+        /* Run steps that require cells to already be loaded */
 
-        console.log('Loading Literate Analytics ....');
+        console.log("Loading Literate Analytics ....");
 
-        litHeaderUI.renderLitUI();
-        litMetadata.setDefaultForkMetadata();
+        headerView.renderHeaderUI();
+        metadataModel.setDefaultNotebookMetadata();
 
-        console.log('Literate Analytics loaded!');
+        console.log("Literate Analytics loaded!");
     }
 
 
@@ -64,9 +65,9 @@ define([
 
         // make sure notebook is fully loaded before interacting with it
         if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
-            loadLitPostNotebook();
+            loadExtensionPostNotebook();
         }
-        events.on("notebook_loaded.Notebook", loadLitPostNotebook);
+        events.on("notebook_loaded.Notebook", loadExtensionPostNotebook);
     }
 
 
