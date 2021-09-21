@@ -6,8 +6,8 @@ define([
     "jquery",
     "base/js/namespace",
     "base/js/dialog",
-    "base/js/utils",
-], function($, Jupyter, dialog, utils) {
+    "../janus/alternativeController",
+], function($, Jupyter, dialog, alternativeController) {
     var rationales = {
         decisionRationale: [
             "methodology",
@@ -230,7 +230,7 @@ define([
                             })
                             .get();
                         for (let i = 0; i < triggerOptions.length; i++) {
-                            if ($(triggerOptions[i]).is(":selected")) {
+                            if ($(triggerOptions[i]).is(":checked")) {
                                 containerID = triggerOptionsParents[i].get()[0].id;
                                 selectedTriggers[containerID].push($(triggerOptions[i]).val());
                             }
@@ -264,7 +264,7 @@ define([
                             })
                             .get();
                         for (let i = 0; i < decisionOptions.length; i++) {
-                            if ($(decisionOptions[i]).is(":selected")) {
+                            if ($(decisionOptions[i]).is(":checked")) {
                                 containerID = decisionOptionsParents[i].get()[0].id;
                                 selectedDecisions[containerID].push(
                                     $(decisionOptions[i]).val()
@@ -287,13 +287,15 @@ define([
                                 title: zipped[i][0],
                                 status: zipped[i][1],
                                 triggers: zipped[i][2],
-                                decision: zipped[i][3],
+                                decisions: zipped[i][3],
                             });
                         }
 
-                        // TODO : Send this data off to be generate new
-                        // interactivity in DOM and store in metadata
-                        console.log(data);
+                        //
+                        console.log(
+                            `Sending data for alternatives creation:\n${Object.entries(data)}`
+                        );
+                        alternativeController.createAlternativeSet(data);
                     },
                 },
             },

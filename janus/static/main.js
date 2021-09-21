@@ -10,6 +10,7 @@ define([
     "base/js/events",
     "../janus/metadataModel",
     "../janus/headerView",
+    "../janus/alternativeController",
 ], function(
     require,
     $,
@@ -17,11 +18,11 @@ define([
     events,
     metadataModel,
     headerView,
+    alternativeController
 ) {
-
     function injectPackages() {
         /*
-         * Intended for fetching modules from the open web, but module not 
+         * Intended for fetching modules from the open web, but module not
          * usable so far ...
          */
 
@@ -29,7 +30,7 @@ define([
         s.type = "module"; // OR try text/javascript
         s.src = "https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js";
         $("head").append(s);
-    };
+    }
 
     function loadCSS() {
         /* Load CSS for the extension */
@@ -41,8 +42,7 @@ define([
         link.rel = "stylesheet";
         link.href = require.toUrl("./main.css");
         document.getElementsByTagName("head")[0].appendChild(link);
-    };
-
+    }
 
     function loadExtensionPostNotebook() {
         /* Run steps that require cells to already be loaded */
@@ -54,7 +54,6 @@ define([
 
         console.log("Literate Analytics loaded!");
     }
-
 
     function loadExtension() {
         /* Called as extension loads and notebook opens */
@@ -70,11 +69,9 @@ define([
         events.on("notebook_loaded.Notebook", loadExtensionPostNotebook);
     }
 
-
     // Tell Jupyter what to run when the extension loads
     return {
         load_jupyter_extension: loadExtension,
-        load_ipython_extension: loadExtension
+        load_ipython_extension: loadExtension,
     };
-
 });

@@ -23,12 +23,13 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
         var defaultAlternativeMetadata = {
             id: uuidv4(),
             alternativeSet: "",
+            alternativeTitle: "",
             alternativeStatus: "option",
             alternativeParent: "",
             alternativeChildren: [],
             alternativeReasoning: {
-                decisionRationale: [],
                 alternativesTrigger: [],
+                decisionRationale: [],
             },
         };
 
@@ -40,7 +41,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
         // Add alternative metadata within notebook metadata array
         Jupyter.notebook.metadata.lit.alternatives.push(defaultAlternativeMetadata);
 
-        return defaultAlternativeMetadata.id;
+        return defaultAlternativeMetadata;
     }
 
     function setDefaultNotebookMetadata() {
@@ -81,13 +82,14 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
             if (alternative.id === alternativeID) {
                 for (var key in data) {
                     // Only update new data
-                    if (!data[key] === alternative[key]) {
+                    if (data[key] != alternative[key]) {
                         alternative[key] = data[key];
 
                         // TODO : Depending on the data update, might need to
                         // update metadata of other alternatives
                     }
                 }
+                return alternative;
             }
         }
     }

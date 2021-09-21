@@ -7,6 +7,7 @@
             "alternatives": [{
                 "id": "53a68468-819c-4f40-b16f-742a0a54892d",
                 "alternativeSet": "594ed339-46ef-464a-894e-c924e53050d5",
+                "alternativeTitle": "Untitled Alternative 1",
                 "alternativeStatus": "option",
                 "alternativeParent": "5c3cab97-1fb4-407e-b55b-3ae1c6f5dfdb",
                 "alternativeChildren": [
@@ -14,6 +15,12 @@
                     "c4b67d5f-fe0e-4af4-b9d4-6fedb31ecf27"
                 ],
                 "alternativeReasoning": {
+                    "alternativesTrigger": [
+                        "opportunism",
+                        "systematicity",
+                        "robustness",
+                        "contingency"
+                    ],
                     "decisionRationale": [
                         "methodology",
                         "prior work",
@@ -21,12 +28,6 @@
                         "expertise",
                         "communication",
                         "sensitivity"
-                    ],
-                    "alternativesTrigger": [
-                        "opportunism",
-                        "systematicity",
-                        "robustness",
-                        "contingency"
                     ]
                 }
             }]
