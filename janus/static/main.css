@@ -4,6 +4,13 @@ hiding cells and tracking changes
 */
 
 
+/* CSS MONKEY PATCHING */
+
+.container {
+    margin-left: 2vw;
+}
+
+
 /* COMMENT MODAL  */
 
 #comment-box {

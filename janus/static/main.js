@@ -4,29 +4,37 @@ hiding cells and tracking changes
 */
 
 define([
-    'require',
-    'jquery',
-    'base/js/namespace',
-    'base/js/events',
-    '../janus/patch',
-    '../janus/sidebar',
-    '../janus/hide',
-    '../janus/ui'
+    "require",
+    "jquery",
+    "base/js/namespace",
+    "base/js/events",
+    "../janus/metadataModel",
+    "../janus/headerView",
 ], function(
     require,
     $,
     Jupyter,
     events,
-    JanusPatch,
-    JanusSidebar,
-    JanusHide,
-    JanusUI
+    metadataModel,
+    headerView,
 ) {
 
-    function loadCSS() {
-        /* Load css for the extension */
+    function injectPackages() {
+        /*
+         * Intended for fetching modules from the open web, but module not 
+         * usable so far ...
+         */
 
-        console.log('Loading CSS from main.css ...');
+        var s = document.createElement("script");
+        s.type = "module"; // OR try text/javascript
+        s.src = "https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js";
+        $("head").append(s);
+    };
+
+    function loadCSS() {
+        /* Load CSS for the extension */
+
+        console.log("Loading CSS from main.css ...");
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -36,17 +44,15 @@ define([
     };
 
 
-    function loadJanusPostNotebook() {
-        /* run steps that require cells to already be loaded */
+    function loadExtensionPostNotebook() {
+        /* Run steps that require cells to already be loaded */
 
-        console.log('Loading Janus ....');
+        console.log("Loading Literate Analytics ....");
 
-        JanusPatch.initializeJanusMetadata();
-        JanusUI.renderJanusUI();
-        JanusHide.initializeVisibility();
-        Jupyter.sidebar.updateHiddenCells();
+        headerView.renderHeaderUI();
+        metadataModel.setDefaultNotebookMetadata();
 
-        console.log('Janus loaded!');
+        console.log("Literate Analytics loaded!");
     }
 
 
@@ -54,14 +60,14 @@ define([
         /* Called as extension loads and notebook opens */
 
         loadCSS();
-        JanusSidebar.createSidebar();
-        JanusPatch.applyJanusPatches();
+        //JanusSidebar.createSidebar();
+        //JanusPatch.applyJanusPatches();
 
         // make sure notebook is fully loaded before interacting with it
         if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
-            loadJanusPostNotebook();
+            loadExtensionPostNotebook();
         }
-        events.on("notebook_loaded.Notebook", loadJanusPostNotebook);
+        events.on("notebook_loaded.Notebook", loadExtensionPostNotebook);
     }
 
 
