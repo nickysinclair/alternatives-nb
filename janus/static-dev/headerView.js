@@ -4,8 +4,9 @@
 
 define([
     "jquery",
-    "base/js/namespace"
-], function($, Jupyter) {
+    "base/js/namespace",
+    "../janus/addAlternativesView"
+], function($, Jupyter, addAlternativesView) {
     function addItemToMenu(menu, id, text, click) {
         /*
          * add <li> to menu
@@ -38,7 +39,7 @@ define([
         [{
                 name: "add_alternatives",
                 display_name: "Add",
-                action: logFunc,
+                action: addAlternativesView.createAddAlternativesModal,
                 icon: "fa-columns",
             },
             {
