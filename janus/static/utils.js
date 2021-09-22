@@ -3,7 +3,7 @@
  */
 
 define(["jquery", "base/js/namespace"], function($, Jupyter) {
-    function retrieveSelectedCells() {
+    function retrieveSelectedCell() {
         /*
          * Return Array of selected cells and pull out the last one
          *
@@ -20,6 +20,6 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
     }
 
     return {
-        retrieveSelectedCells: retrieveSelectedCells,
+        retrieveSelectedCell: retrieveSelectedCell,
     };
 });

@@ -87,34 +87,6 @@ define([
          * Example data expected:
          *
          * [
-         *     {
-         *         "alternativeStatus": "option",
-         *         "alternativeParent": "5c3cab97-1fb4-407e-b55b-3ae1c6f5dfdb",
-         *         "alternativeReasoning": {
-         *             "decisionRationale": [
-         *                 "methodology",
-         *                 "prior work",
-         *                 "data",
-         *                 "expertise",
-         *                 "communication",
-         *                 "sensitivity"
-         *             ],
-         *             "alternativesTrigger": [
-         *                 "opportunism",
-         *                 "systematicity",
-         *                 "robustness",
-         *                 "contingency"
-         *             ]
-         *        }
-         * ]
-         *
-         * [
-         *  {
-         *      title: "",
-         *      status: "",
-         *      triggers: [],
-         *      decisions: []
-         *  },
          *  {
          *      title: "",
          *      status: "",
@@ -148,6 +120,7 @@ define([
         alternativeSet.setAlternatives(alternatives);
 
         // TODO : Manipulate DOM to create new alternativeSet container
+        var selectedCell = litUtils.retrieveSelectedCell();
 
         // TODO : Manipulate DOM to populate container with alternatives
     }
