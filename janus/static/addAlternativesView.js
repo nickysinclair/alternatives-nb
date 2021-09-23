@@ -291,10 +291,7 @@ define([
                             });
                         }
 
-                        //
-                        console.log(
-                            `Sending data for alternatives creation:\n${Object.entries(data)}`
-                        );
+                        // Send for alternatives creation
                         alternativeController.createAlternativeSet(data);
                     },
                 },

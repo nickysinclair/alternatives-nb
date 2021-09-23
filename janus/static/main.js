@@ -11,6 +11,8 @@ define([
     "../janus/metadataModel",
     "../janus/headerView",
     "../janus/alternativeController",
+    "../janus/patchController",
+    "../janus/utils",
 ], function(
     require,
     $,
@@ -18,7 +20,9 @@ define([
     events,
     metadataModel,
     headerView,
-    alternativeController
+    alternativeController,
+    patchController,
+    litUtils,
 ) {
     function injectPackages() {
         /*
@@ -35,7 +39,8 @@ define([
     function loadCSS() {
         /* Load CSS for the extension */
 
-        console.log("Loading CSS from main.css ...");
+        litUtils.log("Loading CSS from main.css ...")
+
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -47,20 +52,20 @@ define([
     function loadExtensionPostNotebook() {
         /* Run steps that require cells to already be loaded */
 
-        console.log("Loading Literate Analytics ....");
+        litUtils.log("Loading Literate Analytics ....");
 
         headerView.renderHeaderUI();
         metadataModel.setDefaultNotebookMetadata();
 
-        console.log("Literate Analytics loaded!");
+        litUtils.log("Literate Analytics loaded!");
     }
 
     function loadExtension() {
         /* Called as extension loads and notebook opens */
 
         loadCSS();
+        patchController.patchNotebook();
         //JanusSidebar.createSidebar();
-        //JanusPatch.applyJanusPatches();
 
         // make sure notebook is fully loaded before interacting with it
         if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
