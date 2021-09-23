@@ -328,7 +328,7 @@ define([
         };
 
         var cell = new textcell.MarkdownCell(cell_options);
-        cell.set_text(`### ${title}`);
+        cell.set_text(`## ${title}`);
         cell.metadata.alternativeSetTitle = title;
         cell.metadata.deletable = false;
         cell.metadata.alternativeSetID = $(parentDiv).data("alternativeSet").id;
