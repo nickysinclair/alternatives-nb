@@ -105,6 +105,42 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
         // Retrieve alternatives metadata
         var alternatives = Jupyter.notebook.metadata.lit.alternatives;
 
+        // Extract IDs, find matching index
+        var alternativesIDs = alternatives.map(function(e) {
+            return e.id;
+        });
+        // Method from https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array
+        var matchIdx = alternativesIDs.indexOf(alternativeID);
+
+        // Splices out alternative JSON object at index
+        if (matchIdx > -1) {
+            alternatives.splice(matchIdx, 1);
+        }
+
+        // Not sure if working with copy or actual JSON so maybe redundant setting
+        Jupyter.notebook.metadata.lit.alternatives = alternatives;
+    }
+
+    function deleteAlternativeMetadataRecursively() {
+        /* PLEASE NOTE!
+         * This is work in progress code to delete nested alternatives through
+         * recursion. The code below was outlined for possible use, but as of
+         * yet has not been connected with user functionality.
+         * 
+         * This function must be somehow linked or cohesively related to the
+         * `deleteAlternativeMetadata` function.
+         */
+
+        /*
+         * Delete the alternative metadata by ID
+         *
+         * Args:
+         *  - alternativeID: alternative object ID (uuid) / `alternative.id`
+         */
+
+        // Retrieve alternatives metadata
+        var alternatives = Jupyter.notebook.metadata.lit.alternatives;
+
         // Get the alternative to be deleted
         for (let i = 0; i < alternatives.length; i++) {
             var alternative = alternatives[i];
@@ -114,11 +150,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
         }
 
         // Define function for recursion
-        function getAlternativeChildrenIDs(
-            alternatives,
-            deleteAlternative,
-            deleteChildrenIDs
-        ) {
+        function getAlternativeChildrenIDs(alternatives, deleteAlternative, deleteChildrenIDs) {
             /*
              * Get all alternatives children using recursion
              * Note that the approach saves the parent and children leading to duplication
@@ -163,7 +195,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
             alternative, []
         );
 
-        // TODO : Figure out how to dynamically remove
+        // TODO : Figure out how to dynamically remove (or does below for loop accomplish just fine?)
         // go to https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array
         // and try using option with header "Edited in October 2016"
         function removeItemAll(arr, value) {

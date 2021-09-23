@@ -94,6 +94,29 @@ define([
             }
             this.arrangeAlternativesStatus();
         }
+
+        deleteAlternatives(deleteAlternatives) {
+            /* 
+             * Delete the alternatives objects from alternative set and 
+             * metadata
+             * 
+             * Args:
+             *  - deleteAlternatives: Array of Alternative objects
+             */
+
+            var newAlternatives = [];
+            for (let i = 0; i < this.alternatives.length; i++) {
+                var alt = this.alternatives[i];
+                // If the alternative is to be deleted, modify JSON
+                // If not to be deleted, add it to keepers' list
+                if (deleteAlternatives.includes(alt)) {
+                    metadataModel.deleteAlternativeMetadata(alt.id);
+                } else {
+                    newAlternatives.push(alt);
+                }
+            }
+            this.alternatives = newAlternatives;
+        }
     }
 
     function createAlternative(data) {
@@ -322,9 +345,94 @@ define([
         return parentDiv;
     }
 
+    function deleteAlternatives() {
+        /* 
+         * Given selected cell(s), delete alternatives associated
+         * 
+         * TODO : Add a dialog first into flow to confirm behavior?
+         */
+
+        // Get selected alternatives of selected cells
+        var nb = Jupyter.notebook;
+        var selectedCells = nb.get_selected_cells();
+        var selectedAlternatives = selectedCells.map(function(c) {
+            return c.metadata.alternativeID;
+        });
+
+        // Remove selected alternatives' duplicates/undefined
+        selectedAlternatives = Array.from(new Set(selectedAlternatives));
+        selectedAlternatives = selectedAlternatives.filter(e => e != undefined);
+
+        // For selected alternatives, unlock title cells to be deletable
+        for (let i = 0; i < selectedCells.length; i++) {
+            var sc = selectedCells[i];
+            if (selectedAlternatives.includes(sc.metadata.alternativeID) &&
+                sc.metadata.deletable === false) {
+                sc.metadata.deletable = true;
+            }
+        }
+
+        // Capture set if all alternatives in a set are to be deleted
+        alternativeSetsDelete = [];
+        for (let i = 0; i < selectedAlternatives.length; i++) {
+            var sa = selectedAlternatives[i];
+            var saSiblings = $(`#${sa}`).siblings();
+
+            // See if all this alternative's siblings are in the selection
+            // Apply condition to return boolean and then `every` returns true
+            // if all are true
+            var allSibsSelected = saSiblings.map(function(_, s) {
+                return selectedAlternatives.includes(s.id);
+            }).get().every(bool => bool);
+
+            if (allSibsSelected) {
+                var alternativeSetID = $(`#${sa}`).parent().parent().data().alternativeSet.id;
+                alternativeSetsDelete.push(alternativeSetID);
+            }
+        }
+        // Remove alternative set duplicates
+        alternativeSetsDelete = Array.from(new Set(alternativeSetsDelete));
+
+        // For captured alternative sets, unlock title cells to be deletable
+        for (let i = 0; i < alternativeSetsDelete.length; i++) {
+            var setTitleCell = $(`#${alternativeSetsDelete[0]}`).children(".cell").data().cell;
+            setTitleCell.metadata.deletable = true;
+        }
+
+        // Delete selected cells
+        nb.delete_cells(nb.get_selected_cells_indices());
+
+        // TODO : Delete unselected cells that are in alternative
+
+        // TODO : Delete alternatives from DOM irrespective of alternative set
+
+        // Remove the alternative set and all its children
+        for (let i = 0; i < alternativeSetsDelete.length; i++) {
+            var altSet = alternativeSetsDelete[i];
+            var altSetObj = $(`#${altSet}`).data().alternativeSet;
+
+            // Remove from DOM
+            $(`#${altSet}`).remove();
+
+            // Delete alternatives from set object and also JSON data
+            altSetObj.deleteAlternatives(altSetObj.alternatives);
+
+            // No need to delete alternative set object
+            // TODO : Better OOP would be an object manages alternative sets 
+            // and explicitly deletes
+        }
+    }
+
+    function alternativesFromJSON() {
+        /*  */
+
+
+    }
+
     return {
         createAlternative: createAlternative,
         createAlternativeSet: createAlternativeSet,
-        setAlternativeSetInDOM: setAlternativeSetInDOM
+        setAlternativeSetInDOM: setAlternativeSetInDOM,
+        deleteAlternatives: deleteAlternatives
     };
 });

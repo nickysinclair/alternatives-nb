@@ -5,8 +5,9 @@
 define([
     "jquery",
     "base/js/namespace",
-    "../janus/addAlternativesView"
-], function($, Jupyter, addAlternativesView) {
+    "../janus/addAlternativesView",
+    "../janus/alternativeController",
+], function($, Jupyter, addAlternativesView, alternativeController) {
     function addItemToMenu(menu, id, text, click) {
         /*
          * add <li> to menu
@@ -38,32 +39,32 @@ define([
     var items = [
         [{
                 name: "add_alternatives",
-                display_name: "Add",
+                display_name: "Add Alternatives",
                 action: addAlternativesView.createAddAlternativesModal,
                 icon: "fa-columns",
             },
             {
-                name: "archive_alternative",
-                display_name: "Archive",
+                name: "archive_alternatives",
+                display_name: "Archive Alternatives",
                 action: logFunc,
                 icon: "fa-archive",
             },
             {
                 name: "delete_alternatives",
-                display_name: "Delete",
-                action: logFunc,
+                display_name: "Delete Alternatives",
+                action: alternativeController.deleteAlternatives,
                 icon: "fa-trash",
             }
         ],
         [{
                 name: "set_alternatives_status",
-                display_name: "Set Decision Status",
+                display_name: "Set Alternatives Decision Status",
                 action: logFunc,
                 icon: "fa-check",
             },
             {
                 name: "label_alternatives",
-                display_name: "Label Rationale",
+                display_name: "Label Alternatives Rationale",
                 action: logFunc,
                 icon: "fa-tags",
             }
@@ -108,7 +109,7 @@ define([
         setNavigationMenu();
 
         var janusMenu = $("#janus-menu");
-        var prefix = "janus";
+        var prefix = "literate-analytics";
         var actionHandler = Jupyter.actions;
         for (let i = 0; i < items.length; i++) {
             var handledActions = [];
@@ -131,7 +132,7 @@ define([
 
                 var handledAction = actionHandler.register(
                     action,
-                    items[i][j].name.replace("_", "-"),
+                    items[i][j].name.replaceAll("_", "-"),
                     prefix
                 );
 

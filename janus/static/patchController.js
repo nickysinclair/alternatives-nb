@@ -164,6 +164,9 @@ define([
         if (Jupyter.notebook.ncells() === 1 &&
             Jupyter.notebook.notebook_name.startsWith("Untitled")) {
 
+            // TODO: Greet the user with an executed Markdown cell above the
+            // empty title cell detailing purpose, actions (with KB shortcuts), etc.
+
             // Set to markdown
             Jupyter.notebook.cells_to_markdown([0]);
             Jupyter.notebook.edit_mode();
@@ -180,7 +183,28 @@ define([
 
 
         };
+    }
 
+    function patchNotebookKeyboardShortcuts() {
+        /* Set keyboard shortcuts for Literate Analytics actions */
+
+        kb = Jupyter.keyboard_manager;
+
+        kb.command_shortcuts.add_shortcut(
+            "Shift-A", "literate-analytics:add-alternatives"
+        );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-X", "literate-analytics:archive-alternatives"
+        );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-D, d", "literate-analytics:delete-alternatives"
+        );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-S", "literate-analytics:set-alternatives-status"
+        );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-L", "literate-analytics:label-alternatives"
+        );
     }
 
     function patchNotebook() {
@@ -190,6 +214,7 @@ define([
          */
         patchNotebookOptionsDefault();
         patchNotebookFirstCellMarkdown();
+        patchNotebookKeyboardShortcuts();
     }
 
     return {
