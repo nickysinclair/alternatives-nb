@@ -41,6 +41,14 @@ div.cell {
     padding: 20px;
 }
 
+.alternative-set-toolbar {
+    padding-left: 10px;
+}
+
+#toggle-archived-alternatives-btn>i+i {
+    margin-left: 5px;
+}
+
 .alternative-set-container {
     /* border: 2px solid green; */
     display: flex;
@@ -81,9 +89,29 @@ div.cell {
     border-left: 10px solid #424CF5;
 }
 
+.alternative-container.archived {
+    opacity: 0.5;
+}
+
 
 /*
- * SET ALTERNATIVE MODAL
+ * ADD ALTERNATIVES MODAL
+ */
+
+.add-alternatives-input-container {
+    margin-left: 10px;
+}
+
+.add-alternatives-warning {
+    margin-left: 20px;
+    color: #A6A7AB;
+    font-style: italic;
+    display: inline;
+}
+
+
+/*
+ * SET ALTERNATIVES MODAL
  */
 
 .set-alternatives-area {
