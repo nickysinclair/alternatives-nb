@@ -31,15 +31,18 @@ define([
        *  - data: `data` from view saved in Models and rendering UI
        */
 
-      // Attaches instance to Jupyter global for access convenience
+      // Attaches Alternative instances to Jupyter global for access convenience
       var alternative = this;
-      Jupyter.alternative = alternative;
+      if (!Jupyter.alternatives) {
+        Jupyter.alternatives = [];
+      }
+      Jupyter.alternatives.push(alternative);
 
-      // TODO : Maybe instead return all default data and then set as
-      // class attributes?
+      // Set default metadata
       var defaultMetadata = metadataModel.setDefaultAlternativeMetadata();
       Object.assign(this, defaultMetadata);
 
+      // Update metadata with data if given
       if (data) {
         var updatedMetadata = metadataModel.updateAlternativeMetadata(
           this.id,
@@ -50,29 +53,84 @@ define([
 
       return this;
     }
+
+    setAlternativeElements() {
+      /*  */
+
+      // Alternative container
+      var alternativeContainer = $("<div>")
+        .prop("id", this.id)
+        .addClass("alternative-container");
+      alternativeContainer.data("alternative", this);
+      alternativeContainer.addClass(
+        litUtils.lowercaseFirstLetter(this.alternativeStatus)
+      );
+
+      // alternative title and empty markdown cells
+      alternativeContainer = appendNewAlternativeTitleCell(
+        alternativeContainer,
+        this.alternativeTitle
+      );
+      alternativeContainer = appendNewCell("markdown", alternativeContainer);
+      this.element = alternativeContainer;
+
+      return alternativeContainer;
+    }
   }
 
   class AlternativeSet {
     constructor() {
       /*
-       *
-       *
-       * Args:
-       *  - data: `data` from dialog view specifying alternatives set
+       * Set of Alternative objects
        */
 
-      // Attaches instance to Jupyter global for access convenience
+      // Attaches AlternativeSet instances to Jupyter global for access convenience
       var alternativeSet = this;
-      Jupyter.alternativeSet = alternativeSet;
+      if (!Jupyter.alternativeSets) {
+        Jupyter.alternativeSets = [];
+      }
+      Jupyter.alternativeSets.push(alternativeSet);
 
       this.id = uuidv4();
       this.alternatives = [];
+      this.setAlternativeSetElements();
 
       return this;
     }
 
+    setAlternativeSetElements() {
+      /*  */
+
+      // Container for alternatives in set and the title cell
+      var alternativeSetAndTitleContainer = $("<div>")
+        .prop("id", this.id)
+        .addClass("alternative-set-and-title-container");
+      alternativeSetAndTitleContainer.data("alternativeSet", this);
+
+      // Place alternative set and title container in DOM after existing cell
+      var selectedCell = litUtils.retrieveLastSelectedCell();
+      selectedCell = selectedCell.element; // pull out element for jquery
+      alternativeSetAndTitleContainer.insertAfter(selectedCell);
+
+      // Add empty cell for alternative set header
+      // TODO : Set this header as a default title or a user-defined title
+      alternativeSetAndTitleContainer = appendNewAlternativeSetTitleCell(
+        alternativeSetAndTitleContainer,
+        "Alternative Set"
+      );
+
+      // Container for alternatives in set
+      var alternativeSetContainer = $("<div>")
+        .prop("id", `flex-container-${this.id}`)
+        .addClass("alternative-set-container");
+
+      // Attach and save as object instance property
+      alternativeSetAndTitleContainer.append(alternativeSetContainer);
+      this.element = alternativeSetAndTitleContainer;
+    }
+
     arrangeAlternativesStatus() {
-      /* Set "choice" status alternatives at the front of Array */
+      /* Rearrange Alternatives in AlternativeSet */
 
       var choiceAlternatives = [];
       var optionAlternatives = [];
@@ -100,10 +158,24 @@ define([
     setAlternatives(newAlternatives) {
       /* Expect an Array even if single alternative */
 
+      // Save alternatives to AlternativeSet property and then rearrange per status
       for (let i = 0; i < newAlternatives.length; i++) {
         this.alternatives.push(newAlternatives[i]);
       }
       this.arrangeAlternativesStatus();
+
+      // Create alternative elements
+      var alternativeContainers = [];
+      for (let i = 0; i < this.alternatives.length; i++) {
+        let alternative = this.alternatives[i];
+        alternativeContainers.push(alternative.setAlternativeElements());
+      }
+
+      // And append alternative elements to alternative set container
+      var alternativeSetContainer = $(`#${this.id} .alternative-set-container`);
+      for (let i = 0; i < alternativeContainers.length; i++) {
+        $(alternativeSetContainer).append(alternativeContainers[i]);
+      }
     }
 
     deleteAlternatives(deleteAlternatives) {
@@ -127,6 +199,29 @@ define([
         }
       }
       this.alternatives = newAlternatives;
+    }
+  }
+
+  class AlternativeSetManager {
+    constructor() {
+      /*
+       * Managing AlternativeSet objects
+       *
+       * Not currently used
+       * TODO : Implement this if it is useful
+       */
+
+      // Attaches AlternativeSet instances to Jupyter global for access convenience
+      var alternativeSetManager = this;
+      if (!Jupyter.alternativeSetManagers) {
+        Jupyter.alternativeSetManagers = [];
+      }
+      Jupyter.alternativeSetManagers.push(alternativeSetManager);
+
+      this.id = uuidv4();
+      this.alternativeSets = [];
+
+      return this;
     }
   }
 
@@ -157,11 +252,10 @@ define([
 
     var alternativeSet = new AlternativeSet();
 
-    // TO DO : Set alternativeParent by requesting DOM for whether current
+    // TODO : Set alternativeParent by requesting DOM for whether current
     // cell is within an alternative
 
-    // Assume data comes as Array of alternatives representing user
-    // input from dialog
+    // Create Alternative object instances
     var alternatives = [];
     for (let i = 0; i < data.length; i++) {
       var alt = createAlternative({
@@ -175,74 +269,93 @@ define([
       });
       alternatives.push(alt);
     }
-
-    // Store with AlternativeSet object
     alternativeSet.setAlternatives(alternatives);
-
-    // TODO : Manipulate DOM to create new alternativeSet container
-    setAlternativeSetInDOM(alternativeSet);
-
-    // TODO : Manipulate DOM to populate container with alternatives
   }
 
-  function setAlternativeSetInDOM(alternativeSet) {
+  function deleteAlternatives() {
     /*
-     * Called by createAlternativeSet, this function sets the alternatives
-     * in an alternative set in the DOM
+     * Given selected cell(s), delete alternatives associated
      *
-     * Args:
-     *  - alternativeSet: AlternativeSet object
+     * TODO : Add a dialog first into flow to confirm behavior?
      */
 
-    // Create alternative set container <div>
-    var alternativeSetAndTitleContainer = $("<div>");
-    alternativeSetAndTitleContainer.attr({
-      id: alternativeSet.id,
-      class: "alternative-set-and-title-container",
-    });
-    alternativeSetAndTitleContainer.data("alternativeSet", alternativeSet);
-
-    // Add empty cell for alternative set header
-    // TODO : Set this header as a default title or a user-defined title
-    alternativeSetAndTitleContainer = appendNewAlternativeSetTitleCell(
-      alternativeSetAndTitleContainer,
-      "Alternative Set"
-    );
-    var alternativeSetContainer = $("<div>");
-    alternativeSetContainer.attr({
-      id: `flex-container-${alternativeSet.id}`,
-      class: "alternative-set-container",
+    // Get selected alternatives of selected cells
+    var nb = Jupyter.notebook;
+    var selectedCells = nb.get_selected_cells();
+    var selectedAlternatives = selectedCells.map(function (c) {
+      return c.metadata.alternativeID;
     });
 
-    // Create alternative
-    for (let i = 0; i < alternativeSet.alternatives.length; i++) {
-      // alternative container <div>
-      var alt = alternativeSet.alternatives[i];
-      altElement = $("<div>").attr({
-        id: alt.id,
-        class: "alternative-container",
-      });
-      altElement.data("alternative", alt);
-      altElement.addClass(litUtils.lowercaseFirstLetter(alt.alternativeStatus));
+    // Remove selected alternatives' duplicates/undefined
+    selectedAlternatives = Array.from(new Set(selectedAlternatives));
+    selectedAlternatives = selectedAlternatives.filter((e) => e != undefined);
 
-      // alternative empty markdown cell
-      altElement = appendNewAlternativeTitleCell(
-        altElement,
-        alt.alternativeTitle
-      );
-      altElement = appendNewCell("markdown", altElement);
-
-      // Set title for first one
-      altElement.children();
-
-      alternativeSetContainer.append(altElement);
+    // For selected alternatives, unlock title cells to be deletable
+    for (let i = 0; i < selectedCells.length; i++) {
+      var sc = selectedCells[i];
+      if (
+        selectedAlternatives.includes(sc.metadata.alternativeID) &&
+        sc.metadata.deletable === false
+      ) {
+        sc.metadata.deletable = true;
+      }
     }
 
-    // Get selected cell and insert alternatives set and alternatives after
-    var selectedCell = litUtils.retrieveLastSelectedCell();
-    selectedCell = selectedCell.element; // pull out element for jquery
-    alternativeSetAndTitleContainer.append(alternativeSetContainer);
-    alternativeSetAndTitleContainer.insertAfter(selectedCell);
+    // Capture set if all alternatives in a set are to be deleted
+    alternativeSetsDelete = [];
+    for (let i = 0; i < selectedAlternatives.length; i++) {
+      var sa = selectedAlternatives[i];
+      var saSiblings = $(`#${sa}`).siblings();
+
+      // See if all this alternative's siblings are in the selection
+      // Apply condition to return boolean and then `every` returns true
+      // if all are true
+      var allSibsSelected = saSiblings
+        .map(function (_, s) {
+          return selectedAlternatives.includes(s.id);
+        })
+        .get()
+        .every((bool) => bool);
+
+      if (allSibsSelected) {
+        var alternativeSetID = $(`#${sa}`).parent().parent().data()
+          .alternativeSet.id;
+        alternativeSetsDelete.push(alternativeSetID);
+      }
+    }
+    // Remove alternative set duplicates
+    alternativeSetsDelete = Array.from(new Set(alternativeSetsDelete));
+
+    // For captured alternative sets, unlock title cells to be deletable
+    for (let i = 0; i < alternativeSetsDelete.length; i++) {
+      var setTitleCell = $(`#${alternativeSetsDelete[0]}`)
+        .children(".cell")
+        .data().cell;
+      setTitleCell.metadata.deletable = true;
+    }
+
+    // Delete selected cells
+    nb.delete_cells(nb.get_selected_cells_indices());
+
+    // TODO : Delete unselected cells that are in alternative
+
+    // TODO : Delete alternatives from DOM irrespective of alternative set
+
+    // Remove the alternative set and all its children
+    for (let i = 0; i < alternativeSetsDelete.length; i++) {
+      var altSet = alternativeSetsDelete[i];
+      var altSetObj = $(`#${altSet}`).data().alternativeSet;
+
+      // Remove from DOM
+      $(`#${altSet}`).remove();
+
+      // Delete alternatives from set object and also JSON data
+      altSetObj.deleteAlternatives(altSetObj.alternatives);
+
+      // No need to delete alternative set object
+      // TODO : Better OOP would be an object manages alternative sets
+      // and explicitly deletes
+    }
   }
 
   function appendNewCell(type = "markdown", parentDiv) {
@@ -358,92 +471,6 @@ define([
     return parentDiv;
   }
 
-  function deleteAlternatives() {
-    /*
-     * Given selected cell(s), delete alternatives associated
-     *
-     * TODO : Add a dialog first into flow to confirm behavior?
-     */
-
-    // Get selected alternatives of selected cells
-    var nb = Jupyter.notebook;
-    var selectedCells = nb.get_selected_cells();
-    var selectedAlternatives = selectedCells.map(function (c) {
-      return c.metadata.alternativeID;
-    });
-
-    // Remove selected alternatives' duplicates/undefined
-    selectedAlternatives = Array.from(new Set(selectedAlternatives));
-    selectedAlternatives = selectedAlternatives.filter((e) => e != undefined);
-
-    // For selected alternatives, unlock title cells to be deletable
-    for (let i = 0; i < selectedCells.length; i++) {
-      var sc = selectedCells[i];
-      if (
-        selectedAlternatives.includes(sc.metadata.alternativeID) &&
-        sc.metadata.deletable === false
-      ) {
-        sc.metadata.deletable = true;
-      }
-    }
-
-    // Capture set if all alternatives in a set are to be deleted
-    alternativeSetsDelete = [];
-    for (let i = 0; i < selectedAlternatives.length; i++) {
-      var sa = selectedAlternatives[i];
-      var saSiblings = $(`#${sa}`).siblings();
-
-      // See if all this alternative's siblings are in the selection
-      // Apply condition to return boolean and then `every` returns true
-      // if all are true
-      var allSibsSelected = saSiblings
-        .map(function (_, s) {
-          return selectedAlternatives.includes(s.id);
-        })
-        .get()
-        .every((bool) => bool);
-
-      if (allSibsSelected) {
-        var alternativeSetID = $(`#${sa}`).parent().parent().data()
-          .alternativeSet.id;
-        alternativeSetsDelete.push(alternativeSetID);
-      }
-    }
-    // Remove alternative set duplicates
-    alternativeSetsDelete = Array.from(new Set(alternativeSetsDelete));
-
-    // For captured alternative sets, unlock title cells to be deletable
-    for (let i = 0; i < alternativeSetsDelete.length; i++) {
-      var setTitleCell = $(`#${alternativeSetsDelete[0]}`)
-        .children(".cell")
-        .data().cell;
-      setTitleCell.metadata.deletable = true;
-    }
-
-    // Delete selected cells
-    nb.delete_cells(nb.get_selected_cells_indices());
-
-    // TODO : Delete unselected cells that are in alternative
-
-    // TODO : Delete alternatives from DOM irrespective of alternative set
-
-    // Remove the alternative set and all its children
-    for (let i = 0; i < alternativeSetsDelete.length; i++) {
-      var altSet = alternativeSetsDelete[i];
-      var altSetObj = $(`#${altSet}`).data().alternativeSet;
-
-      // Remove from DOM
-      $(`#${altSet}`).remove();
-
-      // Delete alternatives from set object and also JSON data
-      altSetObj.deleteAlternatives(altSetObj.alternatives);
-
-      // No need to delete alternative set object
-      // TODO : Better OOP would be an object manages alternative sets
-      // and explicitly deletes
-    }
-  }
-
   function alternativesFromJSON() {
     /*  */
   }
@@ -451,7 +478,6 @@ define([
   return {
     createAlternative: createAlternative,
     createAlternativeSet: createAlternativeSet,
-    setAlternativeSetInDOM: setAlternativeSetInDOM,
     deleteAlternatives: deleteAlternatives,
   };
 });

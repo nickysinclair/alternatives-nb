@@ -294,8 +294,6 @@ define([
               }
             }
 
-            console.log(decisions);
-
             // Zip it all together
             var zipped = titles.map(function (e, i) {
               return [e, statuses[i], triggers[i], decisions[i]];
@@ -310,8 +308,6 @@ define([
                 decisions: zipped[i][3],
               });
             }
-
-            console.dir(data);
 
             // Send for alternatives creation
             alternativeController.createAlternativeSet(data);
