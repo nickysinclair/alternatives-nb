@@ -8,7 +8,7 @@
                 "id": "53a68468-819c-4f40-b16f-742a0a54892d",
                 "alternativeSet": "594ed339-46ef-464a-894e-c924e53050d5",
                 "alternativeTitle": "Untitled Alternative 1",
-                "alternativeStatus": "option",
+                "alternativeStatus": "Option",
                 "alternativeParent": "5c3cab97-1fb4-407e-b55b-3ae1c6f5dfdb",
                 "alternativeChildren": [
                     "4a8c5ae2-a6aa-43ef-8342-899097817345",
@@ -16,18 +16,18 @@
                 ],
                 "alternativeReasoning": {
                     "alternativesTrigger": [
-                        "opportunism",
-                        "systematicity",
-                        "robustness",
-                        "contingency"
+                        "Opportunism",
+                        "Systematicity",
+                        "Robustness",
+                        "Contingency"
                     ],
                     "decisionRationale": [
-                        "methodology",
-                        "prior work",
-                        "data",
-                        "expertise",
-                        "communication",
-                        "sensitivity"
+                        "Methodology",
+                        "Prior work",
+                        "Data",
+                        "Expertise",
+                        "Communication",
+                        "Sensitivity"
                     ]
                 }
             }]
