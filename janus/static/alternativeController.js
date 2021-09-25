@@ -186,6 +186,7 @@ define([
                     for (let i = 0; i < thatAlternativeSet.alternatives.length; i++) {
                         if (thatAlternativeSet.alternatives[i].alternativeStatus === "Archived") {
                             $(`#${thatAlternativeSet.alternatives[i].id}`).hide(0);
+                            $(`#${thatAlternativeSet.alternatives[i].id}`).addClass("hidden");
                         }
                     }
                     $(iconToggle).removeClass("fa-eye-slash");
@@ -194,6 +195,7 @@ define([
                     for (let i = 0; i < thatAlternativeSet.alternatives.length; i++) {
                         if (thatAlternativeSet.alternatives[i].alternativeStatus === "Archived") {
                             $(`#${thatAlternativeSet.alternatives[i].id}`).show(0);
+                            $(`#${thatAlternativeSet.alternatives[i].id}`).removeClass("hidden");
                         }
                     }
                     $(iconToggle).removeClass("fa-eye");
