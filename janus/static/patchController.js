@@ -104,6 +104,65 @@ define([
          */
     }
 
+    function patchNotebookSelect() {
+        /* select */
+
+        select = function(index, moveanchor) {
+            moveanchor = (moveanchor === undefined) ? true : moveanchor;
+
+            if (this.is_valid_cell_index(index)) {
+                var sindex = this.get_selected_index();
+                if (sindex !== null && index !== sindex) {
+                    // If we are about to select a different cell, make sure we are
+                    // first in command mode.
+                    if (this.mode !== 'command') {
+                        this.command_mode();
+                    }
+                    this.get_cell(sindex).unselect(moveanchor);
+                }
+                if (moveanchor) {
+                    this.get_cell(this.get_anchor_index()).unselect(moveanchor);
+                }
+                var cell = this.get_cell(index);
+                cell.select(moveanchor);
+                this.update_soft_selection();
+                if (cell.cell_type === 'heading') {
+                    this.events.trigger('selected_cell_type_changed.Notebook', {
+                        'cell_type': cell.cell_type,
+                        'level': cell.level,
+                        'editable': cell.is_editable()
+                    });
+                } else {
+                    this.events.trigger('selected_cell_type_changed.Notebook', {
+                        'cell_type': cell.cell_type,
+                        'editable': cell.is_editable()
+                    });
+                }
+            }
+            return this;
+        };
+
+        Jupyter.notebook.__proto__.select = function(index, moveanchor) {
+
+            var el = Jupyter.notebook.get_cell_element(index);
+            if (el.parent().hasClass("alternative-set-and-title-container")) {
+                // if index shows us we're at alternative set title cell
+                var lastAlternativesCell = $(".alternative-set-and-title-container").find(".cell").last().data().cell;
+                var lastAlternativesCellIndex = Jupyter.notebook.find_cell_index(lastAlternativesCell);
+                select.apply(this, [lastAlternativesCellIndex, true]);
+                select.apply(this, [index, false]);
+            } else if (el.parent().hasClass("alternative-container") && el.prev().length === 0) {
+                // if index shows us we're at an alternative title cell
+                var lastAlternativeCell = el.parent().find(".cell").last().data().cell;
+                var lastAlternativeCellIndex = Jupyter.notebook.find_cell_index(lastAlternativeCell);
+                select.apply(this, [lastAlternativeCellIndex, true]);
+                select.apply(this, [index, false]);
+            } else {
+                select.apply(this, [index, moveanchor]);
+            }
+        }
+    }
+
     /*
      * PATCHES FOR NOTEBOOK CELL MANIPULATION:
      *  - Move cell(s) up/down
@@ -394,6 +453,7 @@ define([
         patchNotebookInsertElementAtIndex();
         patchNotebookSelectNext();
         patchNotebookSelectPrev();
+        patchNotebookSelect();
 
 
     }
