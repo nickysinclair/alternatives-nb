@@ -93,20 +93,30 @@ define([
      * PATCHES FOR CELL SELECTION FROM NOTEBOOK:
      */
 
-    function patchNotebookUpdateSoftSelection() {
-        /* update_soft_selection
-         *
-         * Executed by `select` for multiple selections, this helper adds and
-         * removes classes for cell highlighting in the "soft selection"
-         *
-         * Consider how alternative sets and alternatives could have changing
-         * CSS when their cells are highlighted
-         */
+
+    function patchNotebookContractSelection() {
+        /* _contract_selection */
+
+        Jupyter.notebook.__proto__._contract_selection = function() {
+            var i = Jupyter.notebook.get_selected_index();
+            var el = Jupyter.notebook.get_cell_element(i);
+            console.log(el);
+            if (el.parent().hasClass("alternative-container") && el.prev().length === 0) {
+                // if selecting alternative title cell, override for normal selection
+                console.log("override");
+                Jupyter.notebook.select(i, true, true);
+            } else {
+                console.log("NOT override");
+                Jupyter.notebook.select(i, true, false);
+            }
+        }
     }
 
     function patchNotebookSelect() {
         /* select */
 
+        // Below function is copy-paste of select function:
+        // https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L845
         select = function(index, moveanchor) {
             moveanchor = (moveanchor === undefined) ? true : moveanchor;
 
@@ -142,16 +152,29 @@ define([
             return this;
         };
 
-        Jupyter.notebook.__proto__.select = function(index, moveanchor) {
+        // MONKEY PATCHING part
+        Jupyter.notebook.__proto__.select = function(index, moveanchor, override = false) {
 
             var el = Jupyter.notebook.get_cell_element(index);
-            if (el.parent().hasClass("alternative-set-and-title-container")) {
+            if (override) {
+                select.apply(this, [index, moveanchor]);
+            } else if (el.parent().hasClass("alternative-set-and-title-container") && !override) {
                 // if index shows us we're at alternative set title cell
-                var lastAlternativesCell = $(".alternative-set-and-title-container").find(".cell").last().data().cell;
+                var lastAlternativesCell = el.parent().find(".cell").last().data().cell;
                 var lastAlternativesCellIndex = Jupyter.notebook.find_cell_index(lastAlternativesCell);
                 select.apply(this, [lastAlternativesCellIndex, true]);
                 select.apply(this, [index, false]);
-            } else if (el.parent().hasClass("alternative-container") && el.prev().length === 0) {
+            } else if (el.parent().hasClass("alternative-container") && el.prev().length === 0 && !override) {
+                if (false) {
+                    // TODO : Support selecting multiple alternatives via shift + click and shift + up/down
+                    // See jupyter/notebook: notebook/static/notebook/js/cells.js - Cell.prototype._on_click
+                    // which triggers 'select.Cell' event which is listened to at
+                    // notebook/static/notebook/js/notebook.js - Notebook.prototype.bind_events - this.on('select.Cell', ...
+
+                    // if alternative is already within selection, extend selection
+                    // while maintaining current selection
+                    // ...
+                }
                 // if index shows us we're at an alternative title cell
                 var lastAlternativeCell = el.parent().find(".cell").last().data().cell;
                 var lastAlternativeCellIndex = Jupyter.notebook.find_cell_index(lastAlternativeCell);
@@ -232,7 +255,10 @@ define([
              * Change the index where things are applied depending on the 
              * context of selected cell
              */
-            else if (this.get_cell_element(selectedIndex + 1).parent().hasClass("alternative-set-and-title-container")) {
+            else if (ncells === index + 1 && insert === "above") {
+                // if inserting above at last cell
+                this.get_cell_element(index).before(element);
+            } else if (this.get_cell_element(selectedIndex + 1).parent().hasClass("alternative-set-and-title-container")) {
                 // at cell before alternative set title cell
                 if (insert === "above") {
                     // if inserting above, insert before (normal behavior)
@@ -453,7 +479,9 @@ define([
         patchNotebookInsertElementAtIndex();
         patchNotebookSelectNext();
         patchNotebookSelectPrev();
-        patchNotebookSelect();
+        // Patches not live because of edit mode issues on title cells
+        //patchNotebookSelect();
+        //patchNotebookContractSelection();
 
 
     }
