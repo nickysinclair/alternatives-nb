@@ -65,6 +65,7 @@ define([
 
         loadCSS();
         patchController.patchNotebook();
+        patchController.patchActions();
         //JanusSidebar.createSidebar();
 
         // make sure notebook is fully loaded before interacting with it

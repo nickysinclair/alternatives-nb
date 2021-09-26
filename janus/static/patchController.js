@@ -246,8 +246,15 @@ define([
                 // special case append if empty
                 this.container.append(element);
             } else if (ncells === index) {
-                // special case append it the end, but not empty
-                this.get_cell_element(index - 1).after(element);
+                // Special MONKEY PATCHING for select next from last cell in alternative
+                // Creates news cell outside of alternative
+                if (Jupyter.notebook.selectNextFlag) {
+                    // if last cell overall and selecting down, append to end of nb container
+                    $("#notebook-container").append(element);
+                } else {
+                    // special case append it the end, but not empty
+                    this.get_cell_element(index - 1).after(element);
+                }
             }
             /*
              * START MONKEY PATCHING SECTION
@@ -478,13 +485,46 @@ define([
         );
     }
 
+    function attachNotebookFlag() {
+        Jupyter.notebook.__proto__.selectNextFlag = false;
+    }
+
+    function setNotebookFlag(flag) {
+        Jupyter.notebook.__proto__.selectNextFlag = flag;
+    }
+
+    function patchActionsSelectNextCell() {
+
+        attachNotebookFlag();
+        console.log(Jupyter.notebook.selectNextFlag);
+        //var selectNextCell = Jupyter.actions._actions["jupyter-notebook:select-next-cell"];
+        var newHandler = function(env) {
+            var index = env.notebook.get_selected_index();
+            setNotebookFlag(false);
+            if (index !== (env.notebook.ncells() - 1) && index !== null) {
+                env.notebook.select_next(true);
+                env.notebook.focus_cell();
+            } else if (index === (env.notebook.ncells() - 1) && index != null) {
+                if (env.notebook.get_cell(index).metadata.alternativeID) {
+                    // if has an alternative ID, i.e., is in an alternative
+                    setNotebookFlag(true);
+                    env.notebook.insert_cell_at_index('markdown', index + 1);
+                    env.notebook.select(index + 1);
+                    env.notebook.set_dirty(true);
+                }
+            }
+            setNotebookFlag(false);
+        }
+        Jupyter.actions._actions["jupyter-notebook:select-next-cell"].handler = newHandler;
+    }
+
     function patchNotebook() {
         /*
          * Notebook level patches applied to Notebook class living at:
          * git:jupyter/notebook/notebook/static/notebook/js/notebook.js
          */
         patchNotebookOptionsDefault();
-        patchNotebookFirstCellMarkdown();
+        //patchNotebookFirstCellMarkdown();
         patchNotebookKeyboardShortcuts();
         patchNotebookInsertElementAtIndex();
         patchNotebookSelectNext();
@@ -496,7 +536,12 @@ define([
 
     }
 
+    function patchActions() {
+        patchActionsSelectNextCell();
+    }
+
     return {
-        patchNotebook: patchNotebook
+        patchNotebook: patchNotebook,
+        patchActions: patchActions
     };
 });
