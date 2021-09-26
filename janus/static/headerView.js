@@ -1,4 +1,4 @@
-/*
+/**
  * Defining toolbar buttons and menu, binding functions, and rendering UI
  */
 
@@ -9,7 +9,7 @@ define([
     "../janus/alternativeController",
 ], function($, Jupyter, addAlternativesView, alternativeController) {
     function addItemToMenu(menu, id, text, click) {
-        /*
+        /**
          * add <li> to menu
          *
          * Args:
@@ -31,7 +31,7 @@ define([
         console.log("abc");
     }
 
-    /*
+    /**
      * Icons available at https://fontawesome.com/
      * Icon version must be available in fa version 4.7, pinned version
      * per https://github.com/jupyter/notebook/blob/master/bower.json
@@ -101,7 +101,7 @@ define([
     }
 
     function addItems(items) {
-        /*
+        /**
          * Function adding items to menu and toolbar according to data
          * structure defined in `var items`
          *
@@ -156,7 +156,7 @@ define([
     }
 
     function renderHeaderUI() {
-        /* Render both menu items and toolbar buttons */
+        /** Render both menu items and toolbar buttons */
 
         addItems(items);
     }

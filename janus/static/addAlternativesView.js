@@ -1,4 +1,4 @@
-/*
+/**
  * Dialog for add alternatives
  */
 
@@ -27,7 +27,7 @@ define([
     };
 
     function createAddAlternativesModal() {
-        /* show the add alternatives modal */
+        /** show the add alternatives modal */
 
         // Add alternatives input
         var addAlternativesArea = $("<div>").addClass("add-alternatives-area");
@@ -50,7 +50,7 @@ define([
         // Only allow values between min and max by coercing input
         // From https://stackoverflow.com/a/50846055/16987984
         addAlternativesInput.on("input paste", function() {
-            /* 
+            /** 
              * PLEASE NOTE : effort to show text on repeatedly incrementing
              * above max or below min using `lastVal` approach is not working
              * because of complexity with which listeners to use and how they
@@ -103,7 +103,7 @@ define([
     }
 
     function createSetAlternativesModal(numAlternatives, kb, nb) {
-        /* show the add alternatives modal */
+        /** show the add alternatives modal */
 
         // Main area for setting alternatives
         var setAlternativesArea = $("<div>").addClass("set-alternatives-area");
@@ -138,7 +138,7 @@ define([
             // Row container
             var row = $("<div>").addClass("tr");
 
-            /*
+            /**
              * TITLES
              */
             var setAlternativesTitle = $("<span>")
@@ -155,7 +155,7 @@ define([
             setAlternativesTitle.append(setAlternativesTitleInput);
             row.append(setAlternativesTitle);
 
-            /*
+            /**
              * STATUSES
              */
             var setAlternativesStatus = $("<span>")
@@ -180,7 +180,7 @@ define([
             }
             row.append(setAlternativesStatus);
 
-            /*
+            /**
              * ALTERNATIVES TRIGGERS
              */
             var setAlternativesTrigger = $("<span>")
@@ -200,7 +200,7 @@ define([
             }
             row.append(setAlternativesTrigger);
 
-            /*
+            /**
              * DECISION RATIONALES
              */
             var setAlternativesDecision = $("<span>")
@@ -233,7 +233,7 @@ define([
             buttons: {
                 Next: {
                     click: function() {
-                        /*
+                        /**
                          * TITLES
                          */
                         var inputTitles = $(".set-alternatives-title-input")
@@ -256,7 +256,7 @@ define([
                             }
                         }
 
-                        /*
+                        /**
                          * STATUSES
                          */
                         var inputStatuses = $(".set-alternatives-status-input").get();
@@ -268,7 +268,7 @@ define([
                             }
                         }
 
-                        /*
+                        /**
                          * ALTERNATIVES TRIGGERS
                          * Generate list of lists, with each inner list for an alternative row
                          */
@@ -290,7 +290,7 @@ define([
                             }
                         }
 
-                        /*
+                        /**
                          * DECISION RATIONALES
                          * Generate list of lists, with each inner list for an alternative row
                          */

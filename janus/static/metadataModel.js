@@ -1,4 +1,4 @@
-/*
+/**
  * Interfacing with JSON metadata.
  */
 
@@ -16,7 +16,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
 ) {
     function setDefaultAlternativeMetadata() {
         // TODO : Figure out what to pass in ...
-        /*
+        /**
          * Set the default metadata for a alternative (notebook container)
          */
 
@@ -45,7 +45,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
     }
 
     function setDefaultNotebookMetadata() {
-        /*
+        /**
          * Set the default metadata on top of which alternative metadata is stored
          */
 
@@ -65,7 +65,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
     }
 
     function updateAlternativeMetadata(alternativeID, data) {
-        /*
+        /**
          * Access an existing alternative and update its metadata with new metadata
          *
          * Expect only data which is to be updated
@@ -95,7 +95,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
     }
 
     function deleteAlternativeMetadata(alternativeID) {
-        /*
+        /**
          * Delete the alternative metadata by ID
          *
          * Args:
@@ -122,7 +122,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
     }
 
     function deleteAlternativeMetadataRecursively() {
-        /* PLEASE NOTE!
+        /** PLEASE NOTE!
          * This is work in progress code to delete nested alternatives through
          * recursion. The code below was outlined for possible use, but as of
          * yet has not been connected with user functionality.
@@ -131,7 +131,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
          * `deleteAlternativeMetadata` function.
          */
 
-        /*
+        /**
          * Delete the alternative metadata by ID
          *
          * Args:
@@ -155,7 +155,7 @@ define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
             deleteAlternative,
             deleteChildrenIDs
         ) {
-            /*
+            /**
              * Get all alternatives children using recursion
              * Note that the approach saves the parent and children leading to duplication
              * which is de-duplicated by type casting array to set to array

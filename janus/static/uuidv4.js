@@ -1,4 +1,4 @@
-/*
+/**
  * Copy-paste of https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js
  * from September 17, 2021
  */

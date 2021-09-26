@@ -1,4 +1,4 @@
-/*
+/**
 Janus: Jupyter Notebook extension that helps users keep clean notebooks by
 hiding cells and tracking changes
 */
@@ -25,7 +25,7 @@ define([
     litUtils,
 ) {
     function injectPackages() {
-        /*
+        /**
          * Intended for fetching modules from the open web, but module not
          * usable so far ...
          */
@@ -37,7 +37,7 @@ define([
     }
 
     function loadCSS() {
-        /* Load CSS for the extension */
+        /** Load CSS for the extension */
 
         litUtils.log("Loading CSS from main.css ...")
 
@@ -50,7 +50,7 @@ define([
     }
 
     function loadExtensionPostNotebook() {
-        /* Run steps that require cells to already be loaded */
+        /** Run steps that require cells to already be loaded */
 
         litUtils.log("Loading Literate Analytics ....");
 
@@ -61,7 +61,7 @@ define([
     }
 
     function loadExtension() {
-        /* Called as extension loads and notebook opens */
+        /** Called as extension loads and notebook opens */
 
         loadCSS();
         patchController.patchNotebook();

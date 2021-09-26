@@ -1,4 +1,4 @@
-/*
+/**
  * Class acting as controller for handling user interactions from DOM and data
  * model interactions with JSON metadata.
  */
@@ -24,7 +24,7 @@ define([
 ) {
     class Alternative {
         constructor(data = null) {
-            /*
+            /**
              * Alternative
              *
              * Args:
@@ -55,7 +55,7 @@ define([
         }
 
         setAlternativeElements() {
-            /*  */
+            /**  */
 
             // Alternative container
             var alternativeContainer = $("<div>")
@@ -86,7 +86,7 @@ define([
 
     class AlternativeSet {
         constructor() {
-            /*
+            /**
              * Set of Alternative objects
              */
 
@@ -105,9 +105,9 @@ define([
         }
 
         setAlternativeSetElements() {
-            /*  */
+            /**  */
 
-            /*
+            /**
              * ALTERNATIVE SET AND TITLE CONTAINER (AND TOOLBAR)
              * Inserted after selected cell
              */
@@ -130,7 +130,7 @@ define([
                 "Alternative Set"
             );
 
-            /*
+            /**
              * ALTERNATIVES CONTAINER (WITHIN ALTERNATIVE SET)
              */
 
@@ -145,11 +145,11 @@ define([
         }
 
         setAlternativeSetToolbar() {
-            /* Set the toolbar - must be done after this.alternatives are set
+            /** Set the toolbar - must be done after this.alternatives are set
              * to array of Alternative object instances]
              */
 
-            /*
+            /**
              * ALTERNATIVE SET TOOLBAR WITH BUTTONS
              *
              */
@@ -220,7 +220,7 @@ define([
         }
 
         arrangeAlternativesStatus() {
-            /* Rearrange Alternatives in AlternativeSet */
+            /** Rearrange Alternatives in AlternativeSet */
 
             var choiceAlternatives = [];
             var optionAlternatives = [];
@@ -246,7 +246,7 @@ define([
         }
 
         setAlternatives(newAlternatives) {
-            /* Expect an Array even if single alternative */
+            /** Expect an Array even if single alternative */
 
             // Save alternatives to AlternativeSet property and then rearrange per status
             for (let i = 0; i < newAlternatives.length; i++) {
@@ -271,7 +271,7 @@ define([
 
     class AlternativeSetManager {
         constructor() {
-            /*
+            /**
              * Managing AlternativeSet objects
              *
              * Not currently used
@@ -293,13 +293,13 @@ define([
     }
 
     function createAlternative(data) {
-        /* Create an alternative */
+        /** Create an alternative */
 
         return new Alternative(data);
     }
 
     function createAlternativeSet(data) {
-        /*
+        /**
          * Create set of alternatives
          *
          * Args:
@@ -364,7 +364,7 @@ define([
     }
 
     function deleteAlternatives() {
-        /*
+        /**
          * Given selected cell(s), delete alternatives associated
          *
          * TODO : Add a dialog first into flow to confirm behavior?
@@ -495,7 +495,7 @@ define([
     }
 
     function setAlternativesStatus(status) {
-        /*
+        /**
          * Set alternatives status: choice, option, archived
          */
 
@@ -601,7 +601,7 @@ define([
     }
 
     function appendNewCell(type = "markdown", parentDiv) {
-        /*
+        /**
          * Append a new empty cell of specified type to
          * parent <div> given
          */
@@ -644,7 +644,7 @@ define([
     }
 
     function appendNewAlternativeTitleCell(parentDiv, title) {
-        /*
+        /**
          * Append a new empty cell of specified type to
          * parent <div> given
          */
@@ -679,7 +679,7 @@ define([
     }
 
     function appendNewAlternativeSetTitleCell(parentDiv, title) {
-        /*
+        /**
          * Append a new empty cell of specified type to
          * parent <div> given
          */
@@ -714,7 +714,7 @@ define([
     }
 
     function alternativesFromJSON() {
-        /*  */
+        /**  */
     }
 
     return {
