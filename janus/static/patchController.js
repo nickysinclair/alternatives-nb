@@ -336,6 +336,10 @@ define([
         // TODO : Add condition where if at end of notebook and in alternative,
         // selecting next will create a cell outside the alternative
 
+        // TODO : If user is using extend selection via shift+up/down or 
+        // shift+click select_next and select_prev will include hidden cells
+        // Accommodating this use case is seemingly complex
+
         Jupyter.notebook.__proto__.select_next = function(moveanchor) {
             var index = this.get_selected_index();
             var ncells = this.ncells();
@@ -447,21 +451,27 @@ define([
         kb = Jupyter.keyboard_manager;
 
         kb.command_shortcuts.add_shortcut(
-            "Shift-A",
+            "Shift-B",
             "literate-analytics:add-alternatives"
-        );
-        kb.command_shortcuts.add_shortcut(
-            "Shift-X",
-            "literate-analytics:archive-alternatives"
         );
         kb.command_shortcuts.add_shortcut(
             "Shift-D, d",
             "literate-analytics:delete-alternatives"
         );
+
         kb.command_shortcuts.add_shortcut(
-            "Shift-S",
-            "literate-analytics:set-alternatives-status"
+            "Shift-1",
+            "literate-analytics:set-alternatives-status-choice"
         );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-2",
+            "literate-analytics:set-alternatives-status-option"
+        );
+        kb.command_shortcuts.add_shortcut(
+            "Shift-3",
+            "literate-analytics:set-alternatives-status-archived"
+        );
+
         kb.command_shortcuts.add_shortcut(
             "Shift-L",
             "literate-analytics:label-alternatives"

@@ -130,8 +130,7 @@ define([
                 "Alternative Set"
             );
 
-
-            /* 
+            /*
              * ALTERNATIVES CONTAINER (WITHIN ALTERNATIVE SET)
              */
 
@@ -152,7 +151,7 @@ define([
 
             /*
              * ALTERNATIVE SET TOOLBAR WITH BUTTONS
-             * 
+             *
              */
 
             // Add a toolbar for archiving/un-archiving alternatives, etc.
@@ -169,10 +168,15 @@ define([
                 .prop("title", "Toggle Archived Alternatives")
                 .addClass("btn")
                 .addClass("btn-default");
-            var visibilityIcon = $("<i>").addClass("fa-eye").addClass("fa").addClass("icon-toggle");
+            var visibilityIcon = $("<i>")
+                .addClass("fa-eye")
+                .addClass("fa")
+                .addClass("icon-toggle");
             var archiveIcon = $("<i>").addClass("fa-archive").addClass("fa");
-            archiveBtnGroup.append(archiveBtn.append(visibilityIcon).append(archiveIcon));
-            alternativeSetToolbar.append(archiveBtnGroup)
+            archiveBtnGroup.append(
+                archiveBtn.append(visibilityIcon).append(archiveIcon)
+            );
+            alternativeSetToolbar.append(archiveBtnGroup);
 
             // INTERACTIVITY
 
@@ -184,7 +188,10 @@ define([
                 let visible = $(iconToggle).hasClass("fa-eye-slash");
                 if (visible) {
                     for (let i = 0; i < thatAlternativeSet.alternatives.length; i++) {
-                        if (thatAlternativeSet.alternatives[i].alternativeStatus === "Archived") {
+                        if (
+                            thatAlternativeSet.alternatives[i].alternativeStatus ===
+                            "Archived"
+                        ) {
                             $(`#${thatAlternativeSet.alternatives[i].id}`).hide(0);
                             $(`#${thatAlternativeSet.alternatives[i].id}`).addClass("hidden");
                         }
@@ -193,9 +200,14 @@ define([
                     $(iconToggle).addClass("fa-eye");
                 } else {
                     for (let i = 0; i < thatAlternativeSet.alternatives.length; i++) {
-                        if (thatAlternativeSet.alternatives[i].alternativeStatus === "Archived") {
+                        if (
+                            thatAlternativeSet.alternatives[i].alternativeStatus ===
+                            "Archived"
+                        ) {
                             $(`#${thatAlternativeSet.alternatives[i].id}`).show(0);
-                            $(`#${thatAlternativeSet.alternatives[i].id}`).removeClass("hidden");
+                            $(`#${thatAlternativeSet.alternatives[i].id}`).removeClass(
+                                "hidden"
+                            );
                         }
                     }
                     $(iconToggle).removeClass("fa-eye");
@@ -205,7 +217,6 @@ define([
 
             // Append toolbar to set and title (and toolbar) container
             $(alternativeSetToolbar).insertAfter(`#${this.id} > .cell`);
-
         }
 
         arrangeAlternativesStatus() {
@@ -255,29 +266,6 @@ define([
             for (let i = 0; i < alternativeContainers.length; i++) {
                 $(alternativeSetContainer).append(alternativeContainers[i]);
             }
-        }
-
-        deleteAlternatives(deleteAlternatives) {
-            /*
-             * Delete the alternatives objects from alternative set and
-             * metadata
-             *
-             * Args:
-             *  - deleteAlternatives: Array of Alternative objects
-             */
-
-            var newAlternatives = [];
-            for (let i = 0; i < this.alternatives.length; i++) {
-                var alt = this.alternatives[i];
-                // If the alternative is to be deleted, modify JSON
-                // If not to be deleted, add it to keepers' list
-                if (deleteAlternatives.includes(alt)) {
-                    metadataModel.deleteAlternativeMetadata(alt.id);
-                } else {
-                    newAlternatives.push(alt);
-                }
-            }
-            this.alternatives = newAlternatives;
         }
     }
 
@@ -353,6 +341,28 @@ define([
         alternativeSet.setAlternativeSetToolbar();
     }
 
+    function lookupAlternativeSet(id) {
+        return Jupyter.alternativeSets.filter((c, _) => c.id === id)[0];
+    }
+
+    function allSetAlternativesSelected(alternatives) {
+        // Get AlternativeSet objects from alternatives and de-duplicate
+        let alternativeSets = alternatives.map(function(a, _) {
+            return lookupAlternativeSet(a.alternativeSet);
+        });
+        alternativeSets = Array.from(new Set(alternativeSets));
+        // See if all alternatives in our sets are selected, and if so
+        // set `hasAlternativeSets` flag to true
+        let altSets = [];
+        for (let i = 0; i < alternativeSets.length; i++) {
+            let altSet = alternativeSets[i];
+            if (altSet.alternatives.every((alt) => alternatives.includes(alt))) {
+                altSets.push(altSet);
+            }
+        }
+        return altSets;
+    }
+
     function deleteAlternatives() {
         /*
          * Given selected cell(s), delete alternatives associated
@@ -360,83 +370,234 @@ define([
          * TODO : Add a dialog first into flow to confirm behavior?
          */
 
-        // Get selected alternatives of selected cells
-        var nb = Jupyter.notebook;
-        var selectedCells = nb.get_selected_cells();
-        var selectedAlternatives = selectedCells.map(function(c) {
-            return c.metadata.alternativeID;
-        });
+        // Get current selection and determine alternative + alternative set selection
+        let selectedCells =
+            $(".jupyter-soft-selected").length === 0 ?
+            $(".selected") :
+            $(".jupyter-soft-selected");
+        let hasAlternatives = selectedCells
+            .map(function(_, c) {
+                return $(c).hasClass("alternative-title-cell");
+            })
+            .get()
+            .includes(true);
+        let hasAlternativeSets = selectedCells
+            .map(function(_, c) {
+                return $(c).hasClass("alternative-set-title-cell");
+            })
+            .get()
+            .includes(true);
 
-        // Remove selected alternatives' duplicates/undefined
-        selectedAlternatives = Array.from(new Set(selectedAlternatives));
-        selectedAlternatives = selectedAlternatives.filter((e) => e != undefined);
+        let alternativeSets = [];
+        let alternatives = [];
+        if (hasAlternatives) {
+            // Set alternative title cells to deletable
+            let alternativeTitleCells = $(selectedCells).filter((_, c) =>
+                $(c).hasClass("alternative-title-cell")
+            );
+            $(alternativeTitleCells).each(function(_, c) {
+                $(c).data().cell.metadata.deletable = true;
+            });
 
-        // For selected alternatives, unlock title cells to be deletable
-        for (let i = 0; i < selectedCells.length; i++) {
-            var sc = selectedCells[i];
-            if (
-                selectedAlternatives.includes(sc.metadata.alternativeID) &&
-                sc.metadata.deletable === false
-            ) {
-                sc.metadata.deletable = true;
-            }
-        }
-
-        // Capture set if all alternatives in a set are to be deleted
-        alternativeSetsDelete = [];
-        for (let i = 0; i < selectedAlternatives.length; i++) {
-            var sa = selectedAlternatives[i];
-            var saSiblings = $(`#${sa}`).siblings();
-
-            // See if all this alternative's siblings are in the selection
-            // Apply condition to return boolean and then `every` returns true
-            // if all are true
-            var allSibsSelected = saSiblings
-                .map(function(_, s) {
-                    return selectedAlternatives.includes(s.id);
+            // Get Alternative objects from title cells
+            alternatives = alternatives.concat(
+                $(alternativeTitleCells)
+                .map(function(_, c) {
+                    let alternative = $(c).parent().data().alternative;
+                    return alternative;
                 })
                 .get()
-                .every((bool) => bool);
+            );
 
-            if (allSibsSelected) {
-                var alternativeSetID = $(`#${sa}`).parent().parent().data()
-                    .alternativeSet.id;
-                alternativeSetsDelete.push(alternativeSetID);
+            // Get AlternativeSet objects implicitly selected by selecting all
+            // their children
+            alternativeSets = alternativeSets.concat(
+                allSetAlternativesSelected(alternatives)
+            );
+            if (alternativeSets.length != 0) {
+                hasAlternativeSets = true;
             }
         }
-        // Remove alternative set duplicates
-        alternativeSetsDelete = Array.from(new Set(alternativeSetsDelete));
+        if (hasAlternativeSets) {
+            // Set alternative set title cells to deletable
+            let alternativeSetTitleCells = $(selectedCells).filter((_, c) =>
+                $(c).hasClass("alternative-set-title-cell")
+            );
+            $(alternativeSetTitleCells).each(function(_, c) {
+                $(c).data().cell.metadata.deletable = true;
+            });
 
-        // For captured alternative sets, unlock title cells to be deletable
-        for (let i = 0; i < alternativeSetsDelete.length; i++) {
-            var setTitleCell = $(`#${alternativeSetsDelete[0]}`)
-                .children(".cell")
-                .data().cell;
-            setTitleCell.metadata.deletable = true;
+            // Add AlternativeSet objects explicitly selected with set title cells
+            alternativeSets = alternativeSets.concat(
+                $(alternativeSetTitleCells)
+                .map(function(_, c) {
+                    let alternativeSet = $(c).parent().data().alternativeSet;
+                    return alternativeSet;
+                })
+                .get()
+            );
         }
 
-        // Delete selected cells
-        nb.delete_cells(nb.get_selected_cells_indices());
+        // Delete all selected cells
+        for (let i = 0; i < selectedCells.length; i++) {
+            let c = selectedCells[i];
+            let index = Jupyter.notebook.find_cell_index($(c).data().cell);
+            Jupyter.notebook.delete_cells([index]);
+        }
 
-        // TODO : Delete unselected cells that are in alternative
+        // Delete all selected alternatives
+        for (let i = 0; i < alternatives.length; i++) {
+            let alternative = alternatives[i];
 
-        // TODO : Delete alternatives from DOM irrespective of alternative set
-
-        // Remove the alternative set and all its children
-        for (let i = 0; i < alternativeSetsDelete.length; i++) {
-            var altSet = alternativeSetsDelete[i];
-            var altSetObj = $(`#${altSet}`).data().alternativeSet;
+            // Remove Alternative from AlternativeSet object
+            let alternativeSet = lookupAlternativeSet(alternative.alternativeSet);
+            let index = alternativeSet.alternatives.indexOf(alternative);
+            alternativeSet.alternatives.splice(index, 1);
 
             // Remove from DOM
-            $(`#${altSet}`).remove();
+            $(alternative.element).remove();
 
-            // Delete alternatives from set object and also JSON data
-            altSetObj.deleteAlternatives(altSetObj.alternatives);
-
-            // No need to delete alternative set object
-            // TODO : Better OOP would be an object manages alternative sets
-            // and explicitly deletes
+            // Delete JSON metadata
+            metadataModel.deleteAlternativeMetadata(alternative.id);
         }
+
+        // Delete all selected alternative sets
+        for (let i = 0; i < alternativeSets.length; i++) {
+            let alternativeSet = alternativeSets[i];
+
+            // Remove AlternativeSet object from global nb instance
+            let index = Jupyter.alternativeSets.indexOf(alternativeSet);
+            Jupyter.alternativeSets.splice(index, 1);
+
+            // Remover from DOM
+            $(alternativeSet.element).remove();
+
+            // Delete JSON metadata
+            // Should be completely done by alternative JSON pass and
+            // this is extra, unnecessary pass
+            for (let j = 0; j < alternativeSet.alternatives.length; j++) {
+                let alternative = alternativeSet.alternatives[j];
+                metadataModel.deleteAlternativeMetadata(alternative.id);
+            }
+        }
+    }
+
+    function setStatusChoice() {
+        setAlternativesStatus("Choice");
+    }
+
+    function setStatusOption() {
+        setAlternativesStatus("Option");
+    }
+
+    function setStatusArchived() {
+        setAlternativesStatus("Archived");
+    }
+
+    function setAlternativesStatus(status) {
+        /*
+         * Set alternatives status: choice, option, archived
+         */
+
+        // Get selected cells
+        let selectedCells =
+            $(".jupyter-soft-selected").length === 0 ?
+            $(".selected") :
+            $(".jupyter-soft-selected");
+
+        // Selected cells' parents
+        let selectedParents = $(selectedCells).map(function(_, c) {
+            return $(c).parent().get();
+        });
+
+        // Selected parents which are alternative containers
+        let alternativeParents = selectedParents.filter((_, p) =>
+            $(p).hasClass("alternative-container")
+        );
+
+        // De-duplicate
+        alternativeParents = Array.from(new Set(alternativeParents));
+
+        // Change status of alternatives and update metadata
+        let alternatives = alternativeParents.map(function(p, _) {
+            return $(p).data().alternative;
+        });
+
+        // Very hacky way to get the alternative set toolbar icon toggle class
+        // properties given an alternative container
+        // TODO : attach toolbar to AlternativeSet object as property and also
+        // the archived toggle status and look that up from the alternative container
+        // Alternative in `data`
+
+        // Show/hide archived according to state of toggle
+        let iconToggles = $(alternativeParents)
+            .parent()
+            .parent()
+            .children(".alternative-set-toolbar")
+            .children("#toggle-archived-alternatives-btn-group")
+            .children("#toggle-archived-alternatives-btn")
+            .children(".icon-toggle");
+
+        // See whether toggle is set to visible for each alternative container
+        // Note that we do not care about duplicates because we are setting
+        // each alternative to hidden (or not) individually
+        let visibles = $(iconToggles).map(function(_, i) {
+            return $(i).hasClass("fa-eye-slash");
+        });
+
+        // Update DOM
+        for (let i = 0; i < alternativeParents.length; i++) {
+            let altParent = alternativeParents[i];
+
+            // NOTE : $(".alternative-container.{status}") selector will not
+            // work for nested alternatives
+            switch (status) {
+                case "Choice":
+                    $(altParent).removeClass("option");
+                    $(altParent).removeClass("archived");
+                    $(".alternative-container").first().before(altParent);
+                    $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
+                    break;
+                case "Option":
+                    $(altParent).removeClass("choice");
+                    $(altParent).removeClass("archived");
+                    if ($(".alternative-container.choice").length === 0) {
+                        $(".alternative-container").first().before(altParent);
+                    } else {
+                        $(".alternative-container.choice").last().after(altParent);
+                    }
+                    $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
+                    break;
+                case "Archived":
+                    $(altParent).removeClass("choice");
+                    $(altParent).removeClass("option");
+                    if ($(".alternative-container.archived").length === 0) {
+                        $(".alternative-container").last().after(altParent);
+                    } else {
+                        $(".alternative-container.archived").first().before(altParent);
+                    }
+                    $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
+                    if (!visibles[i]) {
+                        $(altParent).hide(0);
+                        $(altParent).addClass("hidden");
+                    } else {
+                        $(altParent).show(0);
+                        $(altParent).removeClass("hidden");
+                    }
+                    break;
+            }
+        }
+
+        // Update object and metadata status
+        for (let i = 0; i < alternatives.length; i++) {
+            let alternative = alternatives[i];
+            alternative.alternativeStatus = status;
+            metadataModel.updateAlternativeMetadata(alternative.id, {
+                alternativeStatus: status,
+            });
+        }
+
+        // Re-arrange order of alternatives
     }
 
     function appendNewCell(type = "markdown", parentDiv) {
@@ -506,7 +667,7 @@ define([
         cell.metadata.alternativeID = $(parentDiv).data("alternative").id;
 
         // Append to parent div
-        $(parentDiv).append(cell.element);
+        $(parentDiv).append(cell.element.addClass("alternative-title-cell"));
 
         // Follow up with rendering
         cell.render();
@@ -541,7 +702,7 @@ define([
         cell.metadata.alternativeSetID = $(parentDiv).data("alternativeSet").id;
 
         // Append to parent div
-        $(parentDiv).append(cell.element);
+        $(parentDiv).append(cell.element.addClass("alternative-set-title-cell"));
 
         // Follow up with rendering
         cell.render();
@@ -560,5 +721,8 @@ define([
         createAlternative: createAlternative,
         createAlternativeSet: createAlternativeSet,
         deleteAlternatives: deleteAlternatives,
+        setStatusChoice: setStatusChoice,
+        setStatusOption: setStatusOption,
+        setStatusArchived: setStatusArchived,
     };
 });

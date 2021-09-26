@@ -31,7 +31,7 @@ define([
         console.log("abc");
     }
 
-    /* 
+    /*
      * Icons available at https://fontawesome.com/
      * Icon version must be available in fa version 4.7, pinned version
      * per https://github.com/jupyter/notebook/blob/master/bower.json
@@ -44,31 +44,37 @@ define([
                 icon: "fa-columns",
             },
             {
-                name: "archive_alternatives",
-                display_name: "Archive Alternatives",
-                action: logFunc,
-                icon: "fa-archive",
-            },
-            {
                 name: "delete_alternatives",
                 display_name: "Delete Alternatives",
                 action: alternativeController.deleteAlternatives,
                 icon: "fa-trash",
-            }
+            },
         ],
         [{
-                name: "set_alternatives_status",
-                display_name: "Set Alternatives Decision Status",
-                action: logFunc,
-                icon: "fa-check",
+                name: "set_alternatives_status_choice",
+                display_name: "Set Alternatives: Choice",
+                action: alternativeController.setStatusChoice,
+                icon: "fa-check-circle",
             },
             {
-                name: "label_alternatives",
-                display_name: "Label Alternatives Rationale",
-                action: logFunc,
-                icon: "fa-tags",
-            }
+                name: "set_alternatives_status_option",
+                display_name: "Set Alternatives: Option",
+                action: alternativeController.setStatusOption,
+                icon: "fa-th-large",
+            },
+            {
+                name: "set_alternatives_status_archived",
+                display_name: "Set Alternatives: Archived",
+                action: alternativeController.setStatusArchived,
+                icon: "fa-archive",
+            },
         ],
+        [{
+            name: "label_alternatives",
+            display_name: "Label Alternatives Rationale",
+            action: logFunc,
+            icon: "fa-tags",
+        }, ],
     ];
 
     function setNavigationMenu() {
@@ -92,13 +98,13 @@ define([
         janusHeader.append(
             $("<ul>").addClass("dropdown-menu").attr("id", "janus-menu")
         );
-    };
+    }
 
     function addItems(items) {
         /*
          * Function adding items to menu and toolbar according to data
          * structure defined in `var items`
-         * 
+         *
          * Args:
          *  - items: JSON data defining available actions with UI buttons
          */
@@ -148,7 +154,6 @@ define([
             Jupyter.toolbar.add_buttons_group(handledActions);
         }
     }
-
 
     function renderHeaderUI() {
         /* Render both menu items and toolbar buttons */
