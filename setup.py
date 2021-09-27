@@ -17,5 +17,5 @@ setup(
     license='BSD-3-Clause',
     packages=['alternatives-nb'],
     package_dir={'alternatives-nb': 'alternatives-nb'},
-    package_data={'alternatives-nb': ['static/*.js', 'static/*.css', 'static/config/*.md', 'static/config/*.yaml']}
+    package_data={'alternatives-nb': ['static/*.js', 'static/*.css', 'static/config/*.md', 'static/*.yaml']}
 )
