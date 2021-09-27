@@ -12,8 +12,8 @@ setup(
         'Jupyter Notebook extension that helps users manage decision points ',
         'and explore alternatives and document reasoning and rationale.'
     ),
-    author='Nicholas Sinclair, Adam Rule',
-    author_email='nicholaspsinclair@gmail.com, acrule@ucsd.edu',
+    author='Nicholas Sinclair',
+    author_email='nicholaspsinclair@gmail.com',
     license='BSD-3-Clause',
     packages=['janus'],
     package_dir={'janus': 'janus'},
