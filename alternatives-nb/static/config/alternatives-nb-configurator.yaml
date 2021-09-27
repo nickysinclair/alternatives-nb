@@ -1,0 +1,9 @@
+Type: Jupyter Notebook Extension
+Name: alternatives-nb
+Section: notebook
+Description: |
+  Jupyter Notebook extension that helps users manage decision points
+  and explore alternatives to better document reasoning and rationale.
+Link: README.md
+Main: main.js
+Compatibility: 6.x
