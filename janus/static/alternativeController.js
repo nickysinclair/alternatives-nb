@@ -662,7 +662,7 @@ define([
 
         var cell = new textcell.MarkdownCell(cell_options);
         cell.set_text(`### ${title}`);
-        cell.metadata.alternativeTitle = title;
+        cell.metadata.alternativeTitle = true;
         cell.metadata.deletable = false;
         cell.metadata.alternativeID = $(parentDiv).data("alternative").id;
 
@@ -697,7 +697,7 @@ define([
 
         var cell = new textcell.MarkdownCell(cell_options);
         cell.set_text(`## ${title}`);
-        cell.metadata.alternativeSetTitle = title;
+        cell.metadata.alternativeSetTitle = true;
         cell.metadata.deletable = false;
         cell.metadata.alternativeSetID = $(parentDiv).data("alternativeSet").id;
 

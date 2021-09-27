@@ -1,4 +1,4 @@
-/*
+/**
  * "Monkey patching" notebook functions.
  */
 
@@ -8,13 +8,13 @@ define([
     "notebook/js/cell",
     "notebook/js/textcell",
 ], function($, Jupyter, Cell, TextCell) {
-    /*
+    /**
      * PATCHES FOR LOW-LEVEL, CORE CELL INFO FUNCTIONS
      * IN NOTEBOOK:
      */
 
     function patchNotebookGetCellElements() {
-        /* get_cell_elements
+        /** get_cell_elements
          *
          * No changes needed: `container.find(...).not(...) already traverses
          * entire tree, not just children
@@ -24,7 +24,7 @@ define([
     }
 
     function patchNotebookGetCellElement() {
-        /* get_cell_element
+        /** get_cell_element
          *
          * No changes needed: get_cell_elements does getting heavy lifting
          * and get_cell_element unaffected by nested cells because get_cell_elements
@@ -35,7 +35,7 @@ define([
     }
 
     function patchNotebookGetCells() {
-        /* get_cells
+        /** get_cells
          *
          * No changes needed: get_cell_elements does getting heavy lifting
          * and get_cells unaffected by nested cells because get_cell_elements
@@ -46,7 +46,7 @@ define([
     }
 
     function patchNotebookFindCellIndex() {
-        /* find_cell_index
+        /** find_cell_index
          *
          * No changes needed: get_cell_elements does getting heavy lifting
          * and find_cell_index unaffected by nested cells because get_cell_elements
@@ -57,7 +57,7 @@ define([
     }
 
     function patchNotebookGetSelectedIndex() {
-        /* get_selected_index
+        /** get_selected_index
          *
          * No changes needed: get_cell_elements does getting heavy lifting
          * and get_selected_index unaffected by nested cells because get_cell_elements
@@ -68,7 +68,7 @@ define([
     }
 
     function patchNotebookNCells() {
-        /* ncells
+        /** ncells
          *
          * No changes needed: get_cell_elements does getting heavy lifting
          * and ncells unaffected by nested cells because get_cell_elements
@@ -79,7 +79,7 @@ define([
     }
 
     function patchNotebookExtendSelectionBy() {
-        /* extend_selection_by
+        /** extend_selection_by
          *
          * Simple helper function which executes a `select` based on the current
          * selection and a `delta` argument
@@ -89,13 +89,13 @@ define([
          */
     }
 
-    /*
+    /**
      * PATCHES FOR CELL SELECTION FROM NOTEBOOK:
      */
 
 
     function patchNotebookContractSelection() {
-        /* _contract_selection */
+        /** _contract_selection */
 
         Jupyter.notebook.__proto__._contract_selection = function() {
             var i = Jupyter.notebook.get_selected_index();
@@ -113,7 +113,7 @@ define([
     }
 
     function patchNotebookSelect() {
-        /* select */
+        /** select */
 
         // Below function is copy-paste of select function:
         // https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L845
@@ -186,7 +186,7 @@ define([
         }
     }
 
-    /*
+    /**
      * PATCHES FOR NOTEBOOK CELL MANIPULATION:
      *  - Move cell(s) up/down
      *  - Delete cell(s)
@@ -199,19 +199,139 @@ define([
      * set IDs for persisting via to/from JSON!
      */
 
-    function patchNotebookDeleteCells() {
-        /* delete_cells
-         * 
+    function patchCellMetadataOnPaste(new_cell) {
+        /**
+         * MONKEY PATCHING applied to paste_cell_replace, paste_cell_above,
+         * and paste_cell_below
          */
 
-        // Approach to delete cells:
-        //  1. Check our selection to see if we are selecting locked cells and unlock them
-        //  2. Execute the standard delete cells functionality with function.apply(this, arguments)
-        //  3. In reaction to the deleted selection, delete alternative set and alternatives containers and update the alternatives metadata
+        var alternativeCell = $(new_cell.element).parent().hasClass("alternative-container") ? true : false;
+        if (alternativeCell) {
+            // if pasted into alternative container
+            var alternativeID = $(new_cell.element).parent().data().alternative.id;
+            newMetadata = {
+                alternativeID: alternativeID,
+            }
+            for (var key in newMetadata) {
+                new_cell.metadata[key] = newMetadata[key];
+            }
+        } else {
+            // if pasted outside of alternative container
+
+            // Cover all bases in terms of deleting metadata
+            // `delete` on absent key fails silently by returning `true` - acceptable behavior
+            // TODO : Do this dynamically
+            delete new_cell.metadata.alternativeID;
+            delete new_cell.metadata.alternativeTitle;
+            delete new_cell.metadata.alternativeSetTitle;
+            delete new_cell.metadata.alternativeSetID;
+        }
+    }
+
+    function patchNotebookPasteCellReplace() {
+        /** paste_cell_replace
+         * 
+         * Code is heavily adapted from original source with monkey patch to 
+         * add/remove alternative ID metadata
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L1669
+         */
+
+        Jupyter.notebook.__proto__.paste_cell_replace = function() {
+
+            if (!(Jupyter.notebook.clipboard !== null && Jupyter.notebook.paste_enabled)) {
+                return;
+            }
+
+            var selected = Jupyter.notebook.get_selected_cells_indices();
+            var insertion_index = selected[0];
+            Jupyter.notebook.delete_cells(selected);
+
+            for (var i = Jupyter.notebook.clipboard.length - 1; i >= 0; i--) {
+                var cell_data = Jupyter.notebook.clipboard[i];
+                var new_cell = Jupyter.notebook.insert_cell_at_index(cell_data.cell_type, insertion_index);
+                new_cell.fromJSON(cell_data);
+                /**
+                 * START MONKEY PATCHING
+                 */
+                patchCellMetadataOnPaste(new_cell);
+                /**
+                 * END MONKEY PATCHING
+                 */
+            }
+
+            Jupyter.notebook.select(insertion_index + Jupyter.notebook.clipboard.length - 1);
+        }
+    }
+
+    function patchNotebookPasteCellAbove() {
+        /** paste_cell_above
+         * 
+         * Code is heavily adapted from original source with monkey patch to 
+         * add/remove alternative ID metadata
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L1691
+         */
+
+        Jupyter.notebook.__proto__.paste_cell_above = function() {
+
+            if (Jupyter.notebook.clipboard !== null && Jupyter.notebook.paste_enabled) {
+                var first_inserted = null;
+                for (var i = 0; i < Jupyter.notebook.clipboard.length; i++) {
+                    var cell_data = Jupyter.notebook.clipboard[i];
+                    var new_cell = Jupyter.notebook.insert_cell_above(cell_data.cell_type);
+                    new_cell.fromJSON(cell_data);
+                    /**
+                     * START MONKEY PATCHING
+                     */
+                    patchCellMetadataOnPaste(new_cell);
+                    /**
+                     * END MONKEY PATCHING
+                     */
+                    if (first_inserted === null) {
+                        first_inserted = new_cell;
+                    }
+                }
+                first_inserted.focus_cell();
+            }
+        }
+    }
+
+    function patchNotebookPasteCellBelow() {
+        /** paste_cell_below
+         * 
+         * Code is heavily adapted from original source with monkey patch to 
+         * add/remove alternative ID metadata
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L1709
+         */
+
+        Jupyter.notebook.__proto__.paste_cell_below = function() {
+
+            if (Jupyter.notebook.clipboard !== null && Jupyter.notebook.paste_enabled) {
+                var first_inserted = null;
+                for (var i = Jupyter.notebook.clipboard.length - 1; i >= 0; i--) {
+                    var cell_data = Jupyter.notebook.clipboard[i];
+                    var new_cell = Jupyter.notebook.insert_cell_below(cell_data.cell_type);
+                    new_cell.fromJSON(cell_data);
+                    /**
+                     * START MONKEY PATCHING
+                     */
+                    patchCellMetadataOnPaste(new_cell);
+                    /**
+                     * END MONKEY PATCHING
+                     */
+                    if (first_inserted === null) {
+                        first_inserted = new_cell;
+                    }
+                }
+                first_inserted.focus_cell();
+            }
+        }
     }
 
     function patchNotebookInsertElementAtIndex() {
-        /* _insert_element_at_index
+        /** _insert_element_at_index
          *
          * Re-writing this implementation to be mindful of alternative set and
          * alternative elements within the notebook container. Code heavily 
@@ -256,7 +376,7 @@ define([
                     this.get_cell_element(index - 1).after(element);
                 }
             }
-            /*
+            /**
              * START MONKEY PATCHING SECTION
              *
              * Change the index where things are applied depending on the 
@@ -318,13 +438,21 @@ define([
                     }
                 }
             }
-            /* END MONKEY PATCHING SECTION */
+            /** END MONKEY PATCHING SECTION */
             else if (this.is_valid_cell_index(index)) {
                 // otherwise always somewhere to append to
                 this.get_cell_element(index).before(element);
             } else {
                 return false;
             }
+
+            /**
+             * START MONKEY PATCHING - METADATA
+             */
+            patchCellMetadataOnPaste(element.data().cell);
+            /**
+             * END MONKEY PATCHING - METADATA
+             */
 
             this.undelete_backup_stack.map(function(undelete_backup) {
                 if (index < undelete_backup.index) {
@@ -338,7 +466,7 @@ define([
 
 
     function patchNotebookSelectNext() {
-        /*  */
+        /**  */
 
         // TODO : Add condition where if at end of notebook and in alternative,
         // selecting next will create a cell outside the alternative
@@ -372,7 +500,7 @@ define([
     }
 
     function patchNotebookSelectPrev() {
-        /*  */
+        /**  */
 
         Jupyter.notebook.__proto__.select_prev = function(moveanchor) {
             var index = this.get_selected_index();
@@ -398,12 +526,12 @@ define([
         }
     }
 
-    /*
+    /**
      * PATCHES FOR NOTEBOOK JSON SAVE/LOAD:
      */
 
     function patchNotebookFromJSON() {
-        /* fromJSON
+        /** fromJSON
          *
          * fromJSON will load the `lit` metadata but needs to be patched to
          * lay out cells into alternatives and alternative sets
@@ -413,20 +541,20 @@ define([
          */
     }
 
-    /*
+    /**
      * PATCHES FOR NOTEBOOK DEFAULTS:
      *  - Set first cell for new notebook to markdown
      *  - Set default notebook cell to markdown instead of code
      */
 
     function patchNotebookOptionsDefault() {
-        /* Changes default cell type to markdown */
+        /** Changes default cell type to markdown */
 
         Jupyter.notebook.class_config.defaults.default_cell_type = "markdown";
     }
 
     function patchNotebookFirstCellMarkdown() {
-        /* Change default first cell to be markdown cell for new notebooks */
+        /** Change default first cell to be markdown cell for new notebooks */
 
         // Hack to change first code cell in new notebook to markdown
         nb = Jupyter.notebook;
@@ -453,7 +581,7 @@ define([
     }
 
     function patchNotebookKeyboardShortcuts() {
-        /* Set keyboard shortcuts for Literate Analytics actions */
+        /** Set keyboard shortcuts for Literate Analytics actions */
 
         kb = Jupyter.keyboard_manager;
 
@@ -462,7 +590,7 @@ define([
             "literate-analytics:add-alternatives"
         );
         kb.command_shortcuts.add_shortcut(
-            "Shift-D, d",
+            "Shift-D",
             "literate-analytics:delete-alternatives"
         );
 
@@ -519,7 +647,7 @@ define([
     }
 
     function patchNotebook() {
-        /*
+        /**
          * Notebook level patches applied to Notebook class living at:
          * git:jupyter/notebook/notebook/static/notebook/js/notebook.js
          */
@@ -529,6 +657,9 @@ define([
         patchNotebookInsertElementAtIndex();
         patchNotebookSelectNext();
         patchNotebookSelectPrev();
+        patchNotebookPasteCellReplace();
+        patchNotebookPasteCellAbove();
+        patchNotebookPasteCellBelow();
         // Patches not live because of edit mode issues on title cells
         //patchNotebookSelect();
         //patchNotebookContractSelection();
