@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+    // The below debugging configuration is stale and is not a working solution
+    // for debugging the extension in a browser running the localhost server session
+    // which is attached to Visual Studio Code debugging. For information on how the
+    // extension has been debugged, visit the README.md.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/alternatives-nb/static/main.js"
+        }
+    ]
+}

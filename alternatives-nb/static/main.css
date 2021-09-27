@@ -1,0 +1,167 @@
+/*
+alternatives-nb: Jupyter Notebook extension that helps users manage decision points 
+and explore alternatives to better document reasoning and rationale.
+*/
+
+
+/* CSS MONKEY PATCHING */
+
+.container {
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+#notebook-container {
+    width: 96vw;
+}
+
+div.cell {
+    width: 100ch;
+}
+
+
+/* ALTERNATIVE SET CONTAINER */
+
+
+/*
+ * For guidance on flex settings see links:
+ *  - https://codeburst.io/how-to-create-horizontal-scrolling-containers-d8069651e9c6
+ *  - https://coder-coder.com/display-divs-side-by-side/
+ *
+ * - .alternative-container.padding-bottom : Extra vs. other padding for scrollbar
+ * 
+ * TODO : Figure out how to get the rightmost alternative container to have
+ * padding/margin in order to show shadow on edge
+ */
+
+.alternative-set-and-title-container {
+    /* border: 2px solid red; */
+    /* margin-top: 40px;
+    margin-bottom: 40px; */
+    padding: 20px;
+}
+
+.alternative-set-toolbar {
+    padding-left: 10px;
+}
+
+#toggle-archived-alternatives-btn>i+i {
+    margin-left: 5px;
+}
+
+.alternative-set-container {
+    /* border: 2px solid green; */
+    display: flex;
+    overflow-x: scroll;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 25px;
+}
+
+
+/* 
+ * ALTERNATIVE CONTAINER
+ */
+
+.alternative-container {
+    flex: 1;
+    /*min-width: 100ch;
+    max-width: 100ch;*/
+    box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);
+    padding: 10px;
+    border-radius: 2px;
+}
+
+.alternative-container+.alternative-container {
+    margin-left: 15px;
+}
+
+
+/* 
+ * 3 analogous colors based on selected cell in command mode's blue:
+ *  - Color #1 : #42A5F5 (selected cell in command mode)
+ *  - Color #2 : #424CF5 (choice alternative containers)
+ *  - Color #3 : #42F5EC
+ */
+
+.alternative-container.choice {
+    border-left: 10px solid #424cf5;
+}
+
+.alternative-container.archived {
+    opacity: 0.5;
+}
+
+
+/*
+ * ADD ALTERNATIVES MODAL
+ */
+
+.add-alternatives-input-container {
+    margin-left: 10px;
+}
+
+.add-alternatives-warning {
+    margin-left: 20px;
+    color: #a6a7ab;
+    font-style: italic;
+    display: inline;
+}
+
+
+/*
+ * SET ALTERNATIVES MODAL
+ */
+
+.set-alternatives-area {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.set-alternatives-table {
+    display: table;
+    border: 1px solid gray;
+}
+
+.set-alternatives-header {
+    display: table-header-group;
+}
+
+.tbody {
+    display: table-row-group;
+}
+
+.tr {
+    display: table-row;
+}
+
+.td,
+.th {
+    display: table-cell;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding: 10px;
+    padding-right: 20px;
+}
+
+.td {
+    min-width: 100px;
+}
+
+.th {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.set-alternative-title>input[type="text"] {
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    margin: 0px;
+    margin-right: 5px;
+}
