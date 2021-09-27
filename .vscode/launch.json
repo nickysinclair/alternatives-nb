@@ -16,7 +16,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/janus/static/metadata.js"
+            "program": "${workspaceFolder}/alternatives-nb/static/main.js"
         }
     ]
 }

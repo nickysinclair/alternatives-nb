@@ -6,7 +6,7 @@ define([
     "jquery",
     "base/js/namespace",
     "base/js/dialog",
-    "../janus/alternativeController",
+    "../alternatives-nb/alternativeController",
 ], function($, Jupyter, dialog, alternativeController) {
     var input_options = {
         statuses: ["Choice", "Option", "Archived"],

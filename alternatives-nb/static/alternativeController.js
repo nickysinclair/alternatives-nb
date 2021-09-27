@@ -9,9 +9,9 @@ define([
     "notebook/js/cell",
     "notebook/js/codecell",
     "notebook/js/textcell",
-    "../janus/metadataModel",
-    "../janus/uuidv4",
-    "../janus/utils",
+    "../alternatives-nb/metadataModel",
+    "../alternatives-nb/uuidv4",
+    "../alternatives-nb/utils",
 ], function(
     $,
     Jupyter,

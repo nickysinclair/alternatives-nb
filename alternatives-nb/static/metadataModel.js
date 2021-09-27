@@ -8,7 +8,7 @@
 
 // TODO : addAlternativeMetadataToSet -- ??
 
-define(["require", "jquery", "base/js/namespace", "../janus/uuidv4"], function(
+define(["require", "jquery", "base/js/namespace", "../alternatives-nb/uuidv4"], function(
     require,
     $,
     Jupyter,

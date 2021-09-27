@@ -5,8 +5,8 @@
 define([
     "jquery",
     "base/js/namespace",
-    "../janus/addAlternativesView",
-    "../janus/alternativeController",
+    "../alternatives-nb/addAlternativesView",
+    "../alternatives-nb/alternativeController",
 ], function($, Jupyter, addAlternativesView, alternativeController) {
     function addItemToMenu(menu, id, text, click) {
         /**
@@ -83,7 +83,7 @@ define([
         navbar.append(
             $("<li>")
             .addClass("dropdown")
-            .attr("id", "janus-header")
+            .attr("id", "alternatives-nb-header")
             .append(
                 $("<a>")
                 .addClass("dropdown-toggle")
@@ -93,10 +93,10 @@ define([
             )
         );
 
-        // Add a janus header and add menu to it
-        var janusHeader = $("#janus-header");
-        janusHeader.append(
-            $("<ul>").addClass("dropdown-menu").attr("id", "janus-menu")
+        // Add an alternatives-nb header and add menu to it
+        var alternativesNBHeader = $("#alternatives-nb-header");
+        alternativesNBHeader.append(
+            $("<ul>").addClass("dropdown-menu").attr("id", "alternatives-nb-menu")
         );
     }
 
@@ -114,7 +114,7 @@ define([
 
         setNavigationMenu();
 
-        var janusMenu = $("#janus-menu");
+        var alternativesNBMenu = $("#alternatives-nb-menu");
         var prefix = "literate-analytics";
         var actionHandler = Jupyter.actions;
         for (let i = 0; i < items.length; i++) {
@@ -122,7 +122,7 @@ define([
             for (let j = 0; j < items[i].length; j++) {
                 // Add to menu
                 addItemToMenu(
-                    janusMenu,
+                    alternativesNBMenu,
                     items[i][j].name,
                     items[i][j].display_name,
                     items[i][j].action
@@ -147,7 +147,7 @@ define([
 
             // If next group exists, add a line divider
             if (items[i + 1]) {
-                janusMenu.append($("<li>").addClass("divider"));
+                alternativesNBMenu.append($("<li>").addClass("divider"));
             }
 
             // Add group to toolbar

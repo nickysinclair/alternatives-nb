@@ -1,6 +1,6 @@
 /**
-Janus: Jupyter Notebook extension that helps users keep clean notebooks by
-hiding cells and tracking changes
+alternatives-nb: Jupyter Notebook extension that helps users manage decision points 
+and explore alternatives to better document reasoning and rationale.
 */
 
 define([
@@ -8,11 +8,11 @@ define([
     "jquery",
     "base/js/namespace",
     "base/js/events",
-    "../janus/metadataModel",
-    "../janus/headerView",
-    "../janus/alternativeController",
-    "../janus/patchController",
-    "../janus/utils",
+    "../alternatives-nb/metadataModel",
+    "../alternatives-nb/headerView",
+    "../alternatives-nb/alternativeController",
+    "../alternatives-nb/patchController",
+    "../alternatives-nb/utils",
 ], function(
     require,
     $,
@@ -30,7 +30,6 @@ define([
          * 
          * Modules successfully appear as `<script>` in header, but are
          * not callable from the extension
-         * 
          */
 
         var s = document.createElement("script");
@@ -45,7 +44,6 @@ define([
          */
 
         litUtils.log("Loading CSS from main.css ...")
-
 
         var link = document.createElement("link");
         link.type = "text/css";
@@ -86,7 +84,9 @@ define([
         events.on("notebook_loaded.Notebook", loadExtensionPostNotebook);
     }
 
-    // Tell Jupyter what to run when the extension loads
+    /**
+     * Tell Jupyter what to run when the extension loads
+     */
     return {
         load_jupyter_extension: loadExtension,
         load_ipython_extension: loadExtension,
