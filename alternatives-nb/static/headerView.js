@@ -115,7 +115,7 @@ define([
         setNavigationMenu();
 
         var alternativesNBMenu = $("#alternatives-nb-menu");
-        var prefix = "literate-analytics";
+        var prefix = "alternatives-nb";
         var actionHandler = Jupyter.actions;
         for (let i = 0; i < items.length; i++) {
             var handledActions = [];

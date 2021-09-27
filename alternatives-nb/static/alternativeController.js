@@ -776,12 +776,13 @@ define([
          * }
          */
         let metadata = Jupyter.notebook.metadata;
+        // If there are no cells with alternativeSetID metadata, assume we don't have any alternatives
+        // and don't try to render them
+        if (Jupyter.notebook.get_cells().filter((c, _) => "alternativeSetID" in c.metadata).length === 0) {
+            return;
+        }
         let alternativesMetadata = metadata.lit.alternatives;
         let alternativeSets = {};
-        /** */
-        console.log("\n\nRefactoring alternatives metadata [in JSON]:\n");
-        console.dir(alternativesMetadata);
-        /** */
         for (let i = 0; i < alternativesMetadata.length; i++) {
             let alternative = alternativesMetadata[i];
 
@@ -794,10 +795,6 @@ define([
             alternativeSets[alternative.alternativeSet].push(alternative);
             //delete alternativeSets[alternative.alternativeSet][alternativeSets[alternative.alternativeSet].length - 1].alternativeSet
         }
-        /** */
-        console.log("\n\nAlternatives metadata after refactoring [in memory]:\n");
-        console.dir(alternativeSets);
-        /** */
         Jupyter.alternativeSetsMetadata = alternativeSets;
 
         /**
@@ -807,27 +804,13 @@ define([
          */
 
         let cells = Jupyter.notebook.get_cells();
-        /** */
-        console.log("\n\nCells objects:\n");
-        console.dir(cells);
-        /** */
         let alternatives = [];
         for (let i = 0; i < cells.length; i++) {
             let cell = cells[i];
             let cm = cell.metadata;
-            /** */
-            console.log(`\n\nCell:\nindex: ${i}\nmetadata:\n`);
-            console.dir(cm);
-            /** */
             if (cm.alternativeSetTitle) {
                 // Create the alternative set object and insert into DOM
                 let alternativeSet = new AlternativeSet(cm.alternativeSetID);
-                /** */
-                console.log(`\n\nAlternativeSet created:\n`);
-                console.dir(alternativeSet);
-                console.log(`\n\nUpdated metadata [in JSON]:\n`);
-                console.dir(Jupyter.notebook.metadata.lit.alternatives);
-                /** */
 
                 // Add cell into alternative set in DOM
                 $(`#${cm.alternativeSetID}`).prepend(cell.element.addClass("alternative-set-title-cell"));
@@ -845,13 +828,6 @@ define([
 
                 let alternative = new Alternative(data);
                 alternatives.push(alternative);
-
-                /** */
-                console.log(`\n\nAlternative created:\n`);
-                console.dir(alternative);
-                console.log(`\n\nUpdated metadata [in JSON]:\n`);
-                console.dir(Jupyter.notebook.metadata.lit.alternatives);
-                /** */
 
                 alternative.setAlternativeElements(cm.alternativeID);
                 $(`#${alternative.alternativeSet} .alternative-set-container`)

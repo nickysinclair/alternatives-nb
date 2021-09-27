@@ -57,14 +57,14 @@ define([
          * Load extension functionality after notebook loaded
          * */
 
-        litUtils.log("Loading Literate Analytics ....");
+        litUtils.log("Loading alternatives-nb ....");
 
         headerView.renderHeaderUI();
         metadataModel.setDefaultNotebookMetadata();
         alternativeController.renderAlternativesFromJSON();
         patchController.patchKeyboard()
 
-        litUtils.log("Literate Analytics loaded!");
+        litUtils.log("alternatives-nb loaded!");
     }
 
     function loadExtension() {

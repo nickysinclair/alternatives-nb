@@ -488,6 +488,7 @@ define([
         /** Changes default cell type to markdown */
 
         Jupyter.notebook.class_config.defaults.default_cell_type = "markdown";
+        TextCell.MarkdownCell.options_default.placeholder = "Input analytical rationale in *Markdown* or convert to code cell";
     }
 
     function patchNotebookFirstCellMarkdown() {
@@ -523,35 +524,35 @@ define([
     }
 
     function patchKeyboardShortcuts() {
-        /** Set keyboard shortcuts for Literate Analytics actions */
+        /** Set keyboard shortcuts for alternatives-nb actions */
 
         kb = Jupyter.keyboard_manager;
 
         kb.command_shortcuts.add_shortcut(
             "Shift-B",
-            "literate-analytics:add-alternatives"
+            "alternatives-nb:add-alternatives"
         );
         kb.command_shortcuts.add_shortcut(
             "Shift-D",
-            "literate-analytics:delete-alternatives"
+            "alternatives-nb:delete-alternatives"
         );
 
         kb.command_shortcuts.add_shortcut(
             "Shift-1",
-            "literate-analytics:set-alternatives-status-choice"
+            "alternatives-nb:set-alternatives-status-choice"
         );
         kb.command_shortcuts.add_shortcut(
             "Shift-2",
-            "literate-analytics:set-alternatives-status-option"
+            "alternatives-nb:set-alternatives-status-option"
         );
         kb.command_shortcuts.add_shortcut(
             "Shift-3",
-            "literate-analytics:set-alternatives-status-archived"
+            "alternatives-nb:set-alternatives-status-archived"
         );
 
         kb.command_shortcuts.add_shortcut(
             "Shift-L",
-            "literate-analytics:label-alternatives"
+            "alternatives-nb:label-alternatives"
         );
     }
 

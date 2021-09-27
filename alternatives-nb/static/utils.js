@@ -25,13 +25,13 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
 
     function log(obj) {
         /** 
-         * Log to console with [Literate Analytics] tag 
+         * Log to console with [alternatives-nb] tag 
          */
 
         if (typeof obj === "object") {
-            console.dir(`[Literate Analytics] ${obj}`);
+            console.dir(`[alternatives-nb] ${obj}`);
         } else {
-            console.log(`[Literate Analytics] ${obj}`);
+            console.log(`[alternatives-nb] ${obj}`);
         }
     }
 

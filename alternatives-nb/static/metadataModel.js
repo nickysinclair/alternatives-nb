@@ -20,10 +20,6 @@ define(["require", "jquery", "base/js/namespace", "../alternatives-nb/uuidv4"], 
          * Set the default metadata for a alternative (notebook container)
          */
 
-        /** */
-        console.log(`\n\Setting default metadata for alternative:\n${id}`);
-        /** */
-
         if (!id) {
             id = uuidv4();
         }
@@ -82,11 +78,6 @@ define(["require", "jquery", "base/js/namespace", "../alternatives-nb/uuidv4"], 
          *  - data: data to be updated, expected as JSON syntax
          */
 
-        /** */
-        console.log(`\n\nUpdating metadata for alternative: ${alternativeID}\n, data:\n`);
-        console.dir(data);
-        /** */
-
         var alternatives = Jupyter.notebook.metadata.lit.alternatives;
         for (let i = 0; i < alternatives.length; i++) {
             // Update the metadata matching `alternativeID`
@@ -101,10 +92,7 @@ define(["require", "jquery", "base/js/namespace", "../alternatives-nb/uuidv4"], 
                         // update metadata of other alternatives
                     }
                 }
-                /** */
-                console.log(`\n\nUpdated metadata for alternative:\n`);
-                console.dir(alternative);
-                /** */
+
                 return alternative;
             }
         }
