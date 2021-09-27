@@ -8,86 +8,6 @@ define([
     "notebook/js/cell",
     "notebook/js/textcell",
 ], function($, Jupyter, Cell, TextCell) {
-    /**
-     * PATCHES FOR LOW-LEVEL, CORE CELL INFO FUNCTIONS
-     * IN NOTEBOOK:
-     */
-
-    function patchNotebookGetCellElements() {
-        /** get_cell_elements
-         *
-         * No changes needed: `container.find(...).not(...) already traverses
-         * entire tree, not just children
-         */
-
-        return null;
-    }
-
-    function patchNotebookGetCellElement() {
-        /** get_cell_element
-         *
-         * No changes needed: get_cell_elements does getting heavy lifting
-         * and get_cell_element unaffected by nested cells because get_cell_elements
-         * returns as flat array
-         */
-
-        return null;
-    }
-
-    function patchNotebookGetCells() {
-        /** get_cells
-         *
-         * No changes needed: get_cell_elements does getting heavy lifting
-         * and get_cells unaffected by nested cells because get_cell_elements
-         * returns as flat array
-         */
-
-        return null;
-    }
-
-    function patchNotebookFindCellIndex() {
-        /** find_cell_index
-         *
-         * No changes needed: get_cell_elements does getting heavy lifting
-         * and find_cell_index unaffected by nested cells because get_cell_elements
-         * returns as flat array
-         */
-
-        return null;
-    }
-
-    function patchNotebookGetSelectedIndex() {
-        /** get_selected_index
-         *
-         * No changes needed: get_cell_elements does getting heavy lifting
-         * and get_selected_index unaffected by nested cells because get_cell_elements
-         * returns as flat array
-         */
-
-        return null;
-    }
-
-    function patchNotebookNCells() {
-        /** ncells
-         *
-         * No changes needed: get_cell_elements does getting heavy lifting
-         * and ncells unaffected by nested cells because get_cell_elements
-         * returns as flat array
-         */
-
-        return null;
-    }
-
-    function patchNotebookExtendSelectionBy() {
-        /** extend_selection_by
-         *
-         * Simple helper function which executes a `select` based on the current
-         * selection and a `delta` argument
-         *
-         * Make sure that this can execute `select` into/out of/including cells
-         * within alternatives
-         */
-    }
 
     /**
      * PATCHES FOR CELL SELECTION FROM NOTEBOOK:
@@ -95,7 +15,10 @@ define([
 
 
     function patchNotebookContractSelection() {
-        /** _contract_selection */
+        /** _contract_selection
+         * 
+         * 
+         */
 
         Jupyter.notebook.__proto__._contract_selection = function() {
             var i = Jupyter.notebook.get_selected_index();
@@ -113,10 +36,21 @@ define([
     }
 
     function patchNotebookSelect() {
-        /** select */
+        /** select 
+         * 
+         * Monkey patching select to select entire alternative sets
+         * and alternatives on title cell selection
+         * 
+         * Current implementation is not actually patched because
+         * of buggy cell editing behavior which affects cursor location
+         * in cell clicking
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L845
+         */
 
-        // Below function is copy-paste of select function:
-        // https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L845
+        /**
+         * Original function copy-pasted
+         */
         select = function(index, moveanchor) {
             moveanchor = (moveanchor === undefined) ? true : moveanchor;
 
@@ -152,9 +86,11 @@ define([
             return this;
         };
 
-        // MONKEY PATCHING part
         Jupyter.notebook.__proto__.select = function(index, moveanchor, override = false) {
 
+            /**
+             * START MONKEY PATCHING
+             */
             var el = Jupyter.notebook.get_cell_element(index);
             if (override) {
                 select.apply(this, [index, moveanchor]);
@@ -180,7 +116,12 @@ define([
                 var lastAlternativeCellIndex = Jupyter.notebook.find_cell_index(lastAlternativeCell);
                 select.apply(this, [lastAlternativeCellIndex, true]);
                 select.apply(this, [index, false]);
-            } else {
+            }
+            /**
+             * END MONKEY PATCHING
+             */
+            else {
+                // Normal selection behavior
                 select.apply(this, [index, moveanchor]);
             }
         }
@@ -200,7 +141,7 @@ define([
      */
 
     function patchCellMetadataOnPaste(new_cell) {
-        /**
+        /** 
          * MONKEY PATCHING applied to paste_cell_replace, paste_cell_above,
          * and paste_cell_below
          */
@@ -377,7 +318,7 @@ define([
                 }
             }
             /**
-             * START MONKEY PATCHING SECTION
+             * START MONKEY PATCHING
              *
              * Change the index where things are applied depending on the 
              * context of selected cell
@@ -438,7 +379,9 @@ define([
                     }
                 }
             }
-            /** END MONKEY PATCHING SECTION */
+            /** 
+             * END MONKEY PATCHING
+             */
             else if (this.is_valid_cell_index(index)) {
                 // otherwise always somewhere to append to
                 this.get_cell_element(index).before(element);
@@ -466,10 +409,13 @@ define([
 
 
     function patchNotebookSelectNext() {
-        /**  */
-
-        // TODO : Add condition where if at end of notebook and in alternative,
-        // selecting next will create a cell outside the alternative
+        /** select_next
+         * 
+         * Monkey patching to not select archived, hidden cells during
+         * select navigation, e.g., using up arrow and down arrow keys
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L891
+         */
 
         // TODO : If user is using extend selection via shift+up/down or 
         // shift+click select_next and select_prev will include hidden cells
@@ -500,7 +446,13 @@ define([
     }
 
     function patchNotebookSelectPrev() {
-        /**  */
+        /** select_prev
+         * 
+         * See `patchNotebookSelectNext` for highly similar implementation
+         * with implementation "looking behind" here instead of "looking ahead"
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js#L902
+         */
 
         Jupyter.notebook.__proto__.select_prev = function(moveanchor) {
             var index = this.get_selected_index();
@@ -527,21 +479,6 @@ define([
     }
 
     /**
-     * PATCHES FOR NOTEBOOK JSON SAVE/LOAD:
-     */
-
-    function patchNotebookFromJSON() {
-        /** fromJSON
-         *
-         * fromJSON will load the `lit` metadata but needs to be patched to
-         * lay out cells into alternatives and alternative sets
-         *
-         * A good strategy to do this might be to call fromJSON, then re-lay
-         * out cells that go into alternatives
-         */
-    }
-
-    /**
      * PATCHES FOR NOTEBOOK DEFAULTS:
      *  - Set first cell for new notebook to markdown
      *  - Set default notebook cell to markdown instead of code
@@ -554,7 +491,12 @@ define([
     }
 
     function patchNotebookFirstCellMarkdown() {
-        /** Change default first cell to be markdown cell for new notebooks */
+        /** 
+         * Change default first cell to be markdown cell for new notebooks
+         * 
+         * Implementation is not used because of buggy behavior with editing
+         * the first cell and inserting new cells
+         */
 
         // Hack to change first code cell in new notebook to markdown
         nb = Jupyter.notebook;
@@ -580,7 +522,7 @@ define([
         }
     }
 
-    function patchNotebookKeyboardShortcuts() {
+    function patchKeyboardShortcuts() {
         /** Set keyboard shortcuts for Literate Analytics actions */
 
         kb = Jupyter.keyboard_manager;
@@ -624,7 +566,6 @@ define([
     function patchActionsSelectNextCell() {
 
         attachNotebookFlag();
-        console.log(Jupyter.notebook.selectNextFlag);
         //var selectNextCell = Jupyter.actions._actions["jupyter-notebook:select-next-cell"];
         var newHandler = function(env) {
             var index = env.notebook.get_selected_index();
@@ -648,19 +589,22 @@ define([
 
     function patchNotebook() {
         /**
-         * Notebook level patches applied to Notebook class living at:
-         * git:jupyter/notebook/notebook/static/notebook/js/notebook.js
+         * Notebook level patches applied to Notebook class
+         * 
+         * Permalink: https://github.com/jupyter/notebook/blob/41f148395c2b056998768423257d9c8edb4244ec/notebook/static/notebook/js/notebook.js
          */
         patchNotebookOptionsDefault();
-        //patchNotebookFirstCellMarkdown();
-        patchNotebookKeyboardShortcuts();
+        //patchNotebookFirstCellMarkdown(); // TODO : resolve buggy behavior
+
         patchNotebookInsertElementAtIndex();
         patchNotebookSelectNext();
         patchNotebookSelectPrev();
         patchNotebookPasteCellReplace();
         patchNotebookPasteCellAbove();
         patchNotebookPasteCellBelow();
-        // Patches not live because of edit mode issues on title cells
+
+        // TODO : Revisit select and _contract_selection patches in detail for
+        // determining solution path
         //patchNotebookSelect();
         //patchNotebookContractSelection();
 
@@ -671,8 +615,13 @@ define([
         patchActionsSelectNextCell();
     }
 
+    function patchKeyboard() {
+        patchKeyboardShortcuts();
+    }
+
     return {
         patchNotebook: patchNotebook,
-        patchActions: patchActions
+        patchActions: patchActions,
+        patchKeyboard: patchKeyboard
     };
 });

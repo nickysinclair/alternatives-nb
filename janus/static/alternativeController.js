@@ -38,23 +38,26 @@ define([
             }
             Jupyter.alternatives.push(alternative);
 
-            // Set default metadata
-            var defaultMetadata = metadataModel.setDefaultAlternativeMetadata();
-            Object.assign(this, defaultMetadata);
-
-            // Update metadata with data if given
             if (data) {
-                var updatedMetadata = metadataModel.updateAlternativeMetadata(
-                    this.id,
-                    data
-                );
-                Object.assign(this, updatedMetadata);
+                // Set default metadata
+                if (!("id" in data)) {
+                    // creating alternative from existing metadata
+                    var defaultMetadata = metadataModel.setDefaultAlternativeMetadata();
+                    Object.assign(this, defaultMetadata);
+                    var updatedMetadata = metadataModel.updateAlternativeMetadata(
+                        this.id,
+                        data
+                    );
+                    Object.assign(this, updatedMetadata)
+                } else {
+                    Object.assign(this, data);
+                }
             }
 
             return this;
         }
 
-        setAlternativeElements() {
+        setAlternativeElements(id = null) {
             /**  */
 
             // Alternative container
@@ -66,12 +69,14 @@ define([
                 litUtils.lowercaseFirstLetter(this.alternativeStatus)
             );
 
-            // alternative title and empty markdown cells
-            alternativeContainer = appendNewAlternativeTitleCell(
-                alternativeContainer,
-                this.alternativeTitle
-            );
-            alternativeContainer = appendNewCell("markdown", alternativeContainer);
+            if (!id) {
+                // alternative title and empty markdown cells
+                alternativeContainer = appendNewAlternativeTitleCell(
+                    alternativeContainer,
+                    this.alternativeTitle
+                );
+                alternativeContainer = appendNewCell("markdown", alternativeContainer);
+            }
 
             // Hide archived alternatives on creation
             if (this.alternativeStatus == "Archived") {
@@ -85,7 +90,7 @@ define([
     }
 
     class AlternativeSet {
-        constructor() {
+        constructor(id = null) {
             /**
              * Set of Alternative objects
              */
@@ -97,14 +102,19 @@ define([
             }
             Jupyter.alternativeSets.push(alternativeSet);
 
-            this.id = uuidv4();
             this.alternatives = [];
-            this.setAlternativeSetElements();
+            if (!id) {
+                this.id = uuidv4();
+                this.setAlternativeSetElements();
+            } else {
+                this.id = id;
+                this.setAlternativeSetElements(this.id);
+            }
 
             return this;
         }
 
-        setAlternativeSetElements() {
+        setAlternativeSetElements(id = null) {
             /**  */
 
             /**
@@ -118,17 +128,24 @@ define([
                 .addClass("alternative-set-and-title-container");
             alternativeSetAndTitleContainer.data("alternativeSet", this);
 
-            // Place alternative set and title container in DOM after existing cell
-            var selectedCell = litUtils.retrieveLastSelectedCell();
-            selectedCell = selectedCell.element; // pull out element for jquery
-            alternativeSetAndTitleContainer.insertAfter(selectedCell);
+            if (!id) {
+                // Place alternative set and title container in DOM after existing cell
+                var selectedCell = litUtils.retrieveLastSelectedCell();
+                selectedCell = selectedCell.element; // pull out element for jquery
+                alternativeSetAndTitleContainer.insertAfter(selectedCell);
 
-            // Add empty cell for alternative set header
-            // TODO : Set this header as a default title or a user-defined title
-            alternativeSetAndTitleContainer = appendNewAlternativeSetTitleCell(
-                alternativeSetAndTitleContainer,
-                "Alternative Set"
-            );
+                // Add empty cell for alternative set header
+                // TODO : Set this header as a default title or a user-defined title
+                alternativeSetAndTitleContainer = appendNewAlternativeSetTitleCell(
+                    alternativeSetAndTitleContainer,
+                    "Alternative Set"
+                );
+            } else {
+                $("#notebook-container").append(alternativeSetAndTitleContainer);
+            }
+
+
+
 
             /**
              * ALTERNATIVES CONTAINER (WITHIN ALTERNATIVE SET)
@@ -548,33 +565,35 @@ define([
         // Update DOM
         for (let i = 0; i < alternativeParents.length; i++) {
             let altParent = alternativeParents[i];
+            let setParent = $(altParent).parent().parent().data().alternativeSet;
 
             // NOTE : $(".alternative-container.{status}") selector will not
             // work for nested alternatives
+
             switch (status) {
                 case "Choice":
                     $(altParent).removeClass("option");
                     $(altParent).removeClass("archived");
-                    $(".alternative-container").first().before(altParent);
+                    $(`#${setParent.id} .alternative-container`).first().before(altParent);
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     break;
                 case "Option":
                     $(altParent).removeClass("choice");
                     $(altParent).removeClass("archived");
-                    if ($(".alternative-container.choice").length === 0) {
-                        $(".alternative-container").first().before(altParent);
+                    if ($(`#${setParent.id} .alternative-container.choice`).length === 0) {
+                        $(`#${setParent.id} .alternative-container`).first().before(altParent);
                     } else {
-                        $(".alternative-container.choice").last().after(altParent);
+                        $(`#${setParent.id} .alternative-container.choice`).last().after(altParent);
                     }
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     break;
                 case "Archived":
                     $(altParent).removeClass("choice");
                     $(altParent).removeClass("option");
-                    if ($(".alternative-container.archived").length === 0) {
-                        $(".alternative-container").last().after(altParent);
+                    if ($(`#${setParent.id} .alternative-container.archived`).length === 0) {
+                        $(`#${setParent.id} .alternative-container`).last().after(altParent);
                     } else {
-                        $(".alternative-container.archived").first().before(altParent);
+                        $(`#${setParent.id} .alternative-container.archived`).first().before(altParent);
                     }
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     if (!visibles[i]) {
@@ -713,8 +732,159 @@ define([
         return parentDiv;
     }
 
-    function alternativesFromJSON() {
-        /**  */
+    function renderAlternativesFromJSON() {
+        /**
+         * After completion of notebook.load_notebook_success,
+         * create elements and objects to place cells into
+         */
+
+        /**
+         * Get metadata and transform into structured set
+         * of alternative sets and alternatives
+         */
+        /** Example of structure
+         * {
+         *  ' alternativeSet':
+         *      [
+         *          {   
+         *              "alternativeChildren": [],
+         *              "alternativeParent": "",
+         *              "alternativeReasoning": {
+         *                  "alternativesTrigger": [],
+         *                  "decisionRationale": []
+         *              },
+         *              "alternativeStatus": "Option",
+         *              "alternativeTitle": "Untitled Alternative 1",
+         *              "alternativeSet": "812cc15c-15d1-4af1-a614-49d595f1b34d",
+         *              "id": "ef8f7519-d827-43fe-ac77-0de66439f0c8"
+         *          },
+         *          {   
+         *              "alternativeChildren": [],
+         *              "alternativeParent": "",
+         *              "alternativeReasoning": {
+         *                  "alternativesTrigger": [],
+         *                  "decisionRationale": []
+         *              },
+         *              "alternativeStatus": "Option",
+         *              "alternativeTitle": "Untitled Alternative 1",
+         *              "alternativeSet": "812cc15c-15d1-4af1-a614-49d595f1b34d",
+         *              "id": "ef8f7519-d827-43fe-ac77-0de66439f0c8"
+         *          }
+         *      ]
+         *  'alternativeSet2':
+         *      [ ... ]
+         * }
+         */
+        let metadata = Jupyter.notebook.metadata;
+        let alternativesMetadata = metadata.lit.alternatives;
+        let alternativeSets = {};
+        /** */
+        console.log("\n\nRefactoring alternatives metadata [in JSON]:\n");
+        console.dir(alternativesMetadata);
+        /** */
+        for (let i = 0; i < alternativesMetadata.length; i++) {
+            let alternative = alternativesMetadata[i];
+
+            // Add alternative set if not existing
+            if (!(alternative.alternativeSet in alternativeSets)) {
+                alternativeSets[alternative.alternativeSet] = [];
+            }
+
+            // Add alternative data and delete alternative set from data Object
+            alternativeSets[alternative.alternativeSet].push(alternative);
+            //delete alternativeSets[alternative.alternativeSet][alternativeSets[alternative.alternativeSet].length - 1].alternativeSet
+        }
+        /** */
+        console.log("\n\nAlternatives metadata after refactoring [in memory]:\n");
+        console.dir(alternativeSets);
+        /** */
+        Jupyter.alternativeSetsMetadata = alternativeSets;
+
+        /**
+         * Lay out the alternative sets and alternatives through
+         * approach which iterates all cells and inserts elements and creates objects
+         * when encountering cells requiring placement
+         */
+
+        let cells = Jupyter.notebook.get_cells();
+        /** */
+        console.log("\n\nCells objects:\n");
+        console.dir(cells);
+        /** */
+        let alternatives = [];
+        for (let i = 0; i < cells.length; i++) {
+            let cell = cells[i];
+            let cm = cell.metadata;
+            /** */
+            console.log(`\n\nCell:\nindex: ${i}\nmetadata:\n`);
+            console.dir(cm);
+            /** */
+            if (cm.alternativeSetTitle) {
+                // Create the alternative set object and insert into DOM
+                let alternativeSet = new AlternativeSet(cm.alternativeSetID);
+                /** */
+                console.log(`\n\nAlternativeSet created:\n`);
+                console.dir(alternativeSet);
+                console.log(`\n\nUpdated metadata [in JSON]:\n`);
+                console.dir(Jupyter.notebook.metadata.lit.alternatives);
+                /** */
+
+                // Add cell into alternative set in DOM
+                $(`#${cm.alternativeSetID}`).prepend(cell.element.addClass("alternative-set-title-cell"));
+                continue;
+            } else if (cm.alternativeTitle) {
+                // Create the alternative object, add as alternative set property, and insert into DOM
+                let data = {};
+                for (var key in alternativeSets) {
+                    for (var j = 0; j < alternativeSets[key].length; j++) {
+                        if (cm.alternativeID === alternativeSets[key][j].id) {
+                            data = alternativeSets[key][j];
+                        }
+                    }
+                }
+
+                let alternative = new Alternative(data);
+                alternatives.push(alternative);
+
+                /** */
+                console.log(`\n\nAlternative created:\n`);
+                console.dir(alternative);
+                console.log(`\n\nUpdated metadata [in JSON]:\n`);
+                console.dir(Jupyter.notebook.metadata.lit.alternatives);
+                /** */
+
+                alternative.setAlternativeElements(cm.alternativeID);
+                $(`#${alternative.alternativeSet} .alternative-set-container`)
+                    .append(alternative.element);
+
+                // Add cell into alternative in DOM
+                $(`#${cm.alternativeID}`).prepend(cell.element.addClass("alternative-title-cell"));
+                continue;
+            } else if (cm.alternativeID !== undefined) {
+                // Add cell to alternative container in DOM
+                $(`#${cm.alternativeID}`).append(cell.element);
+                continue;
+            } else {
+                $("#notebook-container").append(cell.element);
+                continue;
+            }
+        }
+
+        // set alternatives to alternative sets
+        for (let i = 0; i < alternatives.length; i++) {
+            let alternative = alternatives[i];
+            let alternativeSetID = alternative.alternativeSet;
+            for (let j = 0; j < Jupyter.alternativeSets.length; j++) {
+                if (alternativeSetID === Jupyter.alternativeSets[j].id) {
+                    Jupyter.alternativeSets[j].alternatives.push(alternative);
+                }
+            }
+        }
+
+        // set alternative set toolbars afterwards
+        for (let i = 0; i < Jupyter.alternativeSets.length; i++) {
+            Jupyter.alternativeSets[i].setAlternativeSetToolbar();
+        }
     }
 
     return {
@@ -724,5 +894,6 @@ define([
         setStatusChoice: setStatusChoice,
         setStatusOption: setStatusOption,
         setStatusArchived: setStatusArchived,
+        renderAlternativesFromJSON: renderAlternativesFromJSON
     };
 });

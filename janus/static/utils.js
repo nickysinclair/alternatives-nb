@@ -24,7 +24,9 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
     }
 
     function log(obj) {
-        /** Log to console with [Literate Analytics] tag */
+        /** 
+         * Log to console with [Literate Analytics] tag 
+         */
 
         if (typeof obj === "object") {
             console.dir(`[Literate Analytics] ${obj}`);
@@ -33,12 +35,18 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
         }
     }
 
-    // From https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
     function capitalizeFirstLetter(string) {
+        /**
+         * Implementation citation:
+         * https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+         */
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     function lowercaseFirstLetter(string) {
+        /**
+         * Implementation approach from {@link capitalizeFirstLetter}
+         */
         return string.charAt(0).toLowerCase() + string.slice(1);
     }
 

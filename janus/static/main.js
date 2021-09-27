@@ -26,8 +26,11 @@ define([
 ) {
     function injectPackages() {
         /**
-         * Intended for fetching modules from the open web, but module not
-         * usable so far ...
+         * Fetching modules from the open web
+         * 
+         * Modules successfully appear as `<script>` in header, but are
+         * not callable from the extension
+         * 
          */
 
         var s = document.createElement("script");
@@ -37,7 +40,9 @@ define([
     }
 
     function loadCSS() {
-        /** Load CSS for the extension */
+        /** 
+         * Load CSS for the extension 
+         */
 
         litUtils.log("Loading CSS from main.css ...")
 
@@ -50,23 +55,29 @@ define([
     }
 
     function loadExtensionPostNotebook() {
-        /** Run steps that require cells to already be loaded */
+        /**
+         * Load extension functionality after notebook loaded
+         * */
 
         litUtils.log("Loading Literate Analytics ....");
 
         headerView.renderHeaderUI();
         metadataModel.setDefaultNotebookMetadata();
+        alternativeController.renderAlternativesFromJSON();
+        patchController.patchKeyboard()
 
         litUtils.log("Literate Analytics loaded!");
     }
 
     function loadExtension() {
-        /** Called as extension loads and notebook opens */
+        /** 
+         * Called as extension loads and notebook opens
+         */
+
 
         loadCSS();
         patchController.patchNotebook();
         patchController.patchActions();
-        //JanusSidebar.createSidebar();
 
         // make sure notebook is fully loaded before interacting with it
         if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
