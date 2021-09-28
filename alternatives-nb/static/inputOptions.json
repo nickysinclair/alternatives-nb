@@ -1,0 +1,17 @@
+{
+    "statuses": ["Choice", "Option", "Archived"],
+    "decisionRationale": [
+        "Methodology",
+        "Prior work",
+        "Data",
+        "Expertise",
+        "Communication",
+        "Sensitivity"
+    ],
+    "alternativesTrigger": [
+        "Opportunism",
+        "Systematicity",
+        "Robustness",
+        "Contingency"
+    ]
+}

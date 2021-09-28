@@ -48,7 +48,7 @@ define([
                         this.id,
                         data
                     );
-                    Object.assign(this, updatedMetadata)
+                    Object.assign(this, updatedMetadata);
                 } else {
                     Object.assign(this, data);
                 }
@@ -68,6 +68,98 @@ define([
             alternativeContainer.addClass(
                 litUtils.lowercaseFirstLetter(this.alternativeStatus)
             );
+
+            // Add tags containers
+            var alternativeTagsContainer = $("<div>")
+                .prop("id", `tags-container-${this.id}`)
+                .addClass("alternative-tags-container");
+            var alternativeTagsTriggersContainer = $("<div>")
+                .prop("id", `tags-trigger-container-${this.id}`)
+                .addClass("alternative-tags-triggers-container")
+                .append(
+                    $("<span>").addClass("tags-header").text("Alternative Triggers")
+                );
+            var alternativeTagsDecisionsContainer = $("<div>")
+                .prop("id", `tags-decisions-container-${this.id}`)
+                .addClass("alternative-tags-decisions-container")
+                .append($("<span>").addClass("tags-header").text("Decision Rationale"));
+
+            var tagToggle = function() {
+                // Get text, alternative container, metadata
+                console.log(this);
+                let tagContent = $(this).text();
+                let parentAlternativeContainer = $(this).parents(
+                    ".alternative-container"
+                );
+                let alternativeReasoning =
+                    parentAlternativeContainer.data().alternative.alternativeReasoning;
+
+                // Deal with either alternative trigger or decision rationale metadata
+                let reasoningMetadata = [];
+                if ($(this).hasClass("alternative-trigger-tag")) {
+                    reasoningMetadata = alternativeReasoning.alternativesTrigger;
+                } else if ($(this).hasClass("decision-rationale-tag")) {
+                    reasoningMetadata = alternativeReasoning.decisionRationale;
+                }
+
+                // Toggle selection and metadata insertion/deletion
+                if ($(this).hasClass("tag-not-selected")) {
+                    $(this).addClass("tag-selected");
+                    $(this).removeClass("tag-not-selected");
+                    reasoningMetadata.push(tagContent);
+                } else if ($(this).hasClass("tag-selected")) {
+                    $(this).addClass("tag-not-selected");
+                    $(this).removeClass("tag-selected");
+                    reasoningMetadata.splice(reasoningMetadata.indexOf(tagContent), 1);
+                }
+            };
+
+            var input_options = litUtils.getInputOptions();
+            for (let i = 0; i < input_options.alternativesTrigger.length; i++) {
+                var alternativesTrigger = input_options.alternativesTrigger[i];
+                cellTag = $("<span>")
+                    .addClass("cell-tag")
+                    .text(alternativesTrigger)
+                    .addClass("alternative-trigger-tag")
+                    .click(tagToggle)
+                    .css("cursor", "pointer");
+                if (
+                    this.alternativeReasoning.alternativesTrigger.includes(
+                        alternativesTrigger
+                    )
+                ) {
+                    cellTag.addClass("tag-selected");
+                } else {
+                    cellTag.addClass("tag-not-selected");
+                }
+                alternativeTagsTriggersContainer.append(cellTag);
+            }
+
+            for (let i = 0; i < input_options.decisionRationale.length; i++) {
+                var decisionRationale = input_options.decisionRationale[i];
+                var cellTag = $("<span>")
+                    .addClass("cell-tag")
+                    .text(decisionRationale)
+                    .addClass("decision-rationale-tag")
+                    .click(tagToggle)
+                    .css("cursor", "pointer");
+                if (
+                    this.alternativeReasoning.decisionRationale.includes(
+                        decisionRationale
+                    )
+                ) {
+                    cellTag.addClass("tag-selected");
+                } else {
+                    cellTag.addClass("tag-not-selected");
+                }
+                alternativeTagsDecisionsContainer.append(cellTag);
+            }
+
+            // Add tags to alternative container
+            alternativeTagsContainer
+                .append(alternativeTagsTriggersContainer)
+                .append(alternativeTagsDecisionsContainer);
+            alternativeContainer.append(alternativeTagsContainer);
 
             if (!id) {
                 // alternative title and empty markdown cells
@@ -143,9 +235,6 @@ define([
             } else {
                 $("#notebook-container").append(alternativeSetAndTitleContainer);
             }
-
-
-
 
             /**
              * ALTERNATIVES CONTAINER (WITHIN ALTERNATIVE SET)
@@ -574,26 +663,40 @@ define([
                 case "Choice":
                     $(altParent).removeClass("option");
                     $(altParent).removeClass("archived");
-                    $(`#${setParent.id} .alternative-container`).first().before(altParent);
+                    $(`#${setParent.id} .alternative-container`)
+                        .first()
+                        .before(altParent);
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     break;
                 case "Option":
                     $(altParent).removeClass("choice");
                     $(altParent).removeClass("archived");
-                    if ($(`#${setParent.id} .alternative-container.choice`).length === 0) {
-                        $(`#${setParent.id} .alternative-container`).first().before(altParent);
+                    if (
+                        $(`#${setParent.id} .alternative-container.choice`).length === 0
+                    ) {
+                        $(`#${setParent.id} .alternative-container`)
+                            .first()
+                            .before(altParent);
                     } else {
-                        $(`#${setParent.id} .alternative-container.choice`).last().after(altParent);
+                        $(`#${setParent.id} .alternative-container.choice`)
+                            .last()
+                            .after(altParent);
                     }
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     break;
                 case "Archived":
                     $(altParent).removeClass("choice");
                     $(altParent).removeClass("option");
-                    if ($(`#${setParent.id} .alternative-container.archived`).length === 0) {
-                        $(`#${setParent.id} .alternative-container`).last().after(altParent);
+                    if (
+                        $(`#${setParent.id} .alternative-container.archived`).length === 0
+                    ) {
+                        $(`#${setParent.id} .alternative-container`)
+                            .last()
+                            .after(altParent);
                     } else {
-                        $(`#${setParent.id} .alternative-container.archived`).first().before(altParent);
+                        $(`#${setParent.id} .alternative-container.archived`)
+                            .first()
+                            .before(altParent);
                     }
                     $(altParent).addClass(litUtils.lowercaseFirstLetter(status));
                     if (!visibles[i]) {
@@ -746,7 +849,7 @@ define([
          * {
          *  ' alternativeSet':
          *      [
-         *          {   
+         *          {
          *              "alternativeChildren": [],
          *              "alternativeParent": "",
          *              "alternativeReasoning": {
@@ -758,7 +861,7 @@ define([
          *              "alternativeSet": "812cc15c-15d1-4af1-a614-49d595f1b34d",
          *              "id": "ef8f7519-d827-43fe-ac77-0de66439f0c8"
          *          },
-         *          {   
+         *          {
          *              "alternativeChildren": [],
          *              "alternativeParent": "",
          *              "alternativeReasoning": {
@@ -778,7 +881,11 @@ define([
         let metadata = Jupyter.notebook.metadata;
         // If there are no cells with alternativeSetID metadata, assume we don't have any alternatives
         // and don't try to render them
-        if (Jupyter.notebook.get_cells().filter((c, _) => "alternativeSetID" in c.metadata).length === 0) {
+        if (
+            Jupyter.notebook
+            .get_cells()
+            .filter((c, _) => "alternativeSetID" in c.metadata).length === 0
+        ) {
             return;
         }
         let alternativesMetadata = metadata.lit.alternatives;
@@ -813,7 +920,9 @@ define([
                 let alternativeSet = new AlternativeSet(cm.alternativeSetID);
 
                 // Add cell into alternative set in DOM
-                $(`#${cm.alternativeSetID}`).prepend(cell.element.addClass("alternative-set-title-cell"));
+                $(`#${cm.alternativeSetID}`).prepend(
+                    cell.element.addClass("alternative-set-title-cell")
+                );
                 continue;
             } else if (cm.alternativeTitle) {
                 // Create the alternative object, add as alternative set property, and insert into DOM
@@ -830,11 +939,14 @@ define([
                 alternatives.push(alternative);
 
                 alternative.setAlternativeElements(cm.alternativeID);
-                $(`#${alternative.alternativeSet} .alternative-set-container`)
-                    .append(alternative.element);
+                $(`#${alternative.alternativeSet} .alternative-set-container`).append(
+                    alternative.element
+                );
 
                 // Add cell into alternative in DOM
-                $(`#${cm.alternativeID}`).prepend(cell.element.addClass("alternative-title-cell"));
+                $(`#${cm.alternativeID}`).prepend(
+                    cell.element.addClass("alternative-title-cell")
+                );
                 continue;
             } else if (cm.alternativeID !== undefined) {
                 // Add cell to alternative container in DOM
@@ -870,6 +982,6 @@ define([
         setStatusChoice: setStatusChoice,
         setStatusOption: setStatusOption,
         setStatusArchived: setStatusArchived,
-        renderAlternativesFromJSON: renderAlternativesFromJSON
+        renderAlternativesFromJSON: renderAlternativesFromJSON,
     };
 });

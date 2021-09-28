@@ -24,8 +24,8 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
     }
 
     function log(obj) {
-        /** 
-         * Log to console with [alternatives-nb] tag 
+        /**
+         * Log to console with [alternatives-nb] tag
          */
 
         if (typeof obj === "object") {
@@ -50,10 +50,31 @@ define(["jquery", "base/js/namespace"], function($, Jupyter) {
         return string.charAt(0).toLowerCase() + string.slice(1);
     }
 
+    function getInputOptions() {
+        return {
+            statuses: ["Choice", "Option", "Archived"],
+            decisionRationale: [
+                "Methodology",
+                "Prior work",
+                "Data",
+                "Expertise",
+                "Communication",
+                "Sensitivity",
+            ],
+            alternativesTrigger: [
+                "Opportunism",
+                "Systematicity",
+                "Robustness",
+                "Contingency",
+            ],
+        };
+    }
+
     return {
         retrieveLastSelectedCell: retrieveLastSelectedCell,
         log: log,
         capitalizeFirstLetter: capitalizeFirstLetter,
         lowercaseFirstLetter: lowercaseFirstLetter,
+        getInputOptions: getInputOptions,
     };
 });

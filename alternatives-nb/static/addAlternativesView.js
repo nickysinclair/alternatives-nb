@@ -7,40 +7,35 @@ define([
     "base/js/namespace",
     "base/js/dialog",
     "../alternatives-nb/alternativeController",
-], function($, Jupyter, dialog, alternativeController) {
-    var input_options = {
-        statuses: ["Choice", "Option", "Archived"],
-        decisionRationale: [
-            "Methodology",
-            "Prior work",
-            "Data",
-            "Expertise",
-            "Communication",
-            "Sensitivity",
-        ],
-        alternativesTrigger: [
-            "Opportunism",
-            "Systematicity",
-            "Robustness",
-            "Contingency",
-        ],
-    };
-
+    "../alternatives-nb/utils",
+], function($, Jupyter, dialog, alternativeController, litUtils) {
     function createAddAlternativesModal() {
         /** show the add alternatives modal */
 
         // Add alternatives input
         var addAlternativesArea = $("<div>").addClass("add-alternatives-area");
-        var addAlternativesPrompt = $("<span>").addClass("add-alternatives-prompt").text("Number of alternatives:");
+        var addAlternativesPrompt = $("<span>")
+            .addClass("add-alternatives-prompt")
+            .text("Number of alternatives:");
         addAlternativesArea.append(addAlternativesPrompt);
 
-        var addAlternativesSpan = $("<span>").addClass("add-alternatives-input-container");
-        var addAlternativesInput = $("<input>").addClass("add-alternatives-input").prop("type", "number");
+        var addAlternativesSpan = $("<span>").addClass(
+            "add-alternatives-input-container"
+        );
+        var addAlternativesInput = $("<input>")
+            .addClass("add-alternatives-input")
+            .prop("type", "number");
         addAlternativesInput = addAlternativesInput.prop("placeholder", 2);
         addAlternativesInput = addAlternativesInput.prop("min", 1);
         addAlternativesInput = addAlternativesInput.prop("max", 10);
-        var addAlternativesWarning = $("<span>").addClass("add-alternatives-warning");
-        addAlternativesWarning.text(`Value must be between ${addAlternativesInput.prop("min")} and ${addAlternativesInput.prop("max")}`);
+        var addAlternativesWarning = $("<span>").addClass(
+            "add-alternatives-warning"
+        );
+        addAlternativesWarning.text(
+            `Value must be between ${addAlternativesInput.prop(
+        "min"
+      )} and ${addAlternativesInput.prop("max")}`
+        );
         addAlternativesWarning.hide(0);
 
         addAlternativesSpan.append(addAlternativesInput);
@@ -50,7 +45,7 @@ define([
         // Only allow values between min and max by coercing input
         // From https://stackoverflow.com/a/50846055/16987984
         addAlternativesInput.on("input paste", function() {
-            /** 
+            /**
              * PLEASE NOTE : effort to show text on repeatedly incrementing
              * above max or below min using `lastVal` approach is not working
              * because of complexity with which listeners to use and how they
@@ -59,21 +54,31 @@ define([
             if (!$(this).data("lastVal")) {
                 $(this).data("lastVal", $(this).prop("placeholder"));
             }
-            if (parseInt(this.value) === parseInt($(this).data("lastVal")) && (parseInt(this.value) === parseInt(this.max) || parseInt(this.value) === parseInt(this.min))) {
+            if (
+                parseInt(this.value) === parseInt($(this).data("lastVal")) &&
+                (parseInt(this.value) === parseInt(this.max) ||
+                    parseInt(this.value) === parseInt(this.min))
+            ) {
                 addAlternativesWarning.show(0);
-                setTimeout(function() { addAlternativesWarning.hide(0); }, 2000)
+                setTimeout(function() {
+                    addAlternativesWarning.hide(0);
+                }, 2000);
             }
             if (parseInt(this.max) < parseInt(this.value)) {
                 this.value = this.max;
                 addAlternativesWarning.show(0);
-                setTimeout(function() { addAlternativesWarning.hide(0); }, 2000)
+                setTimeout(function() {
+                    addAlternativesWarning.hide(0);
+                }, 2000);
             } else if (parseInt(this.min) > parseInt(this.value)) {
                 this.value = this.min;
                 addAlternativesWarning.show(0);
-                setTimeout(function() { addAlternativesWarning.hide(0); }, 2000)
+                setTimeout(function() {
+                    addAlternativesWarning.hide(0);
+                }, 2000);
             }
             $(this).data("lastVal", parseInt(this.value));
-        })
+        });
 
         // Create the modal
         var mod = dialog.modal({
@@ -104,6 +109,8 @@ define([
 
     function createSetAlternativesModal(numAlternatives, kb, nb) {
         /** show the add alternatives modal */
+
+        var input_options = litUtils.getInputOptions();
 
         // Main area for setting alternatives
         var setAlternativesArea = $("<div>").addClass("set-alternatives-area");

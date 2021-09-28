@@ -86,20 +86,71 @@ div.cell {
     margin-left: 25px;
 }
 
-
-/* 
- * 3 analogous colors based on selected cell in command mode's blue:
- *  - Color #1 : #42A5F5 (selected cell in command mode)
- *  - Color #2 : #424CF5 (choice alternative containers)
- *  - Color #3 : #42F5EC
- */
-
 .alternative-container.choice {
-    border-left: 10px solid #60618F;
+    border-left: 10px solid #60618f;
 }
 
 .alternative-container.archived {
     opacity: 0.5;
+}
+
+
+/*
+ * ALTERNATIVE TAGS
+ */
+
+.alternative-tags-header {
+    padding: 10px 0px;
+}
+
+.alternative-tags-triggers-container {
+    padding: 10px 0px;
+}
+
+.alternative-tags-decisions-container {
+    padding: 10px 0px;
+}
+
+.tags-header {
+    text-transform: lowercase;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0px 20px 0px 10px;
+}
+
+.cell-tag+.cell-tag {
+    margin-left: 10px;
+}
+
+.cell-tag {
+    border-radius: 7px;
+    padding: 0.2em 0.7em;
+    height: inherit;
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: lowercase;
+}
+
+.cell-tag.tag-not-selected {
+    opacity: 0.5;
+}
+
+.cell-tag.tag-selected {
+    opacity: 1;
+}
+
+.cell-tag.alternative-trigger-tag {
+    background: rgba(12, 242, 215, 0.1);
+    border: 1px solid rgba(12, 242, 215, 0.5);
+}
+
+.cell-tag.decision-rationale-tag {
+    background: rgba(12, 242, 215, 0.1);
+    border: 1px solid rgba(12, 242, 215, 0.5);
+}
+
+.remove-tag-btn {
+    margin-left: 7px;
 }
 
 
