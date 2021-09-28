@@ -69,12 +69,6 @@ define([
                 icon: "fa-archive",
             },
         ],
-        [{
-            name: "label_alternatives",
-            display_name: "Label Alternatives Rationale",
-            action: logFunc,
-            icon: "fa-tags",
-        }, ],
     ];
 
     function setNavigationMenu() {
