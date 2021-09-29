@@ -1,3 +1,4 @@
 jupyter contrib nbextension install --user
-
+pip install git+https://github.com/nickysinclair/alternatives-nb.git
+jupyter nbextension install --py alternatives-nb --user
 jupyter trust Untitled.ipynb
