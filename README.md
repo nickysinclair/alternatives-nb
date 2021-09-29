@@ -1,3 +1,5 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/Untitled.ipynb)
+
 # alternatives-nb
 Jupyter Notebook extension that helps users manage decision points 
 and explore alternatives to better document reasoning and rationale.
