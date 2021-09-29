@@ -2,6 +2,6 @@
 *__pycache__/
 MANIFEST
 .ipynb_checkpoints/
-*.ipynb
+.ipynb
 *.code-workspace
 *.nnb
