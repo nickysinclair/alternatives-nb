@@ -12,7 +12,7 @@ _alternatives-nb_ is the software product in partial fulfillment of a master's d
 
 ## Copyright and License
 
-alternatives-nb is originally forked from [_janus_](https://github.com/acrule/janus), a Jupyter Notebook extension designed to help organize notebooks and part of a [published research paper](https://dl.acm.org/doi/pdf/10.1145/3274419) on the topic. The vast majority of the source code is completely rewritten for the alternatives-nb application, but the janus BSD-3-Clause License is maintained alongside a new BSD-3-Clause License for this project (see [LICENSE.txt](/License.txt))
+alternatives-nb is originally forked from [_janus_](https://github.com/acrule/janus), a Jupyter Notebook extension designed to help organize notebooks and part of a [published research paper](https://dl.acm.org/doi/pdf/10.1145/3274419) on the topic. The vast majority of the source code is completely rewritten for the alternatives-nb application, but the janus BSD-3-Clause License is maintained alongside a new BSD-3-Clause License for this project (see [LICENSE.txt](/LICENSE.txt))
 
 ## Binder
 
