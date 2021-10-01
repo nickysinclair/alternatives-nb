@@ -1,4 +1,4 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/Untitled.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/alternatives-nb-example.ipynb)
 
 # alternatives-nb
 
@@ -16,7 +16,7 @@ alternatives-nb is originally forked from [_janus_](https://github.com/acrule/ja
 
 ## Binder
 
-[Try out the extension online](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/Untitled.ipynb) in Jupyter's online editing notebook environment, Binder. The extension is tested and shown to be moderately functional in Safari 14 and Safari 15 and with Python 3.9.6 and Jupyter Notebook 6.4.3.
+[Try out the extension online](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/alternatives-nb-example.ipynb) in Jupyter's online editing notebook environment, Binder. The extension is tested and shown to be moderately functional in Safari 14 and Safari 15 and with Python 3.9.6 and Jupyter Notebook 6.4.3.
 
 ## Machine Installation
 
