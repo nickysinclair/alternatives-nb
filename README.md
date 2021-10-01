@@ -26,8 +26,8 @@ The below machine installation instructions assume a prior installation of _pip_
 # install jupyter notebook
 pip install notebook
 
-# installs convenient (optional) contributor extensions to jupyter server
-# some of these extensions can be used to enable/disable extensions
+# install convenient (optional) contributor extensions to jupyter server
+# some of these extensions can be used to enable/disable extensions in UI
 jupyter contrib nbextension install --user
 
 # install alternatives-nb from GitHub, install JS/CSS to jupyter server, enable
@@ -35,7 +35,7 @@ pip install git+https://github.com/nickysinclair/alternatives-nb.git
 jupyter nbextension install --py alternatives-nb --user
 jupyter nbextension enable  --py alternatives-nb --user
 
-# Trust desired file in current working directory
+# trust desired file in current working directory
 jupyter trust Untitled.ipynb
 
 # start notebook server (typically at localhost:8888)
