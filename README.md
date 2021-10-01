@@ -12,15 +12,15 @@ _alternatives-nb_ is the software product in partial fulfillment of a master's d
 
 ## Copyright and License
 
-alternatives-nb is originally forked from [_janus_](https://github.com/acrule/janus), a Jupyter Notebook extension designed to help organize notebooks and part of a [published research paper](https://dl.acm.org/doi/pdf/10.1145/3274419) on the topic. The vast majority of the source code is completely rewritten for the alternatives-nb application, but the janus BSD-3-Clause License is maintained alongside a new BSD-3-Clause License for this project (see [LICENSE.txt](/LICENSE.txt))
+alternatives-nb is originally forked from [_janus_](https://github.com/acrule/janus), a Jupyter Notebook extension designed to help organize notebooks and part of a [published research paper](https://dl.acm.org/doi/pdf/10.1145/3274419) on the topic. The vast majority of the source code is completely rewritten for the alternatives-nb application, but the janus BSD-3-Clause License is maintained alongside a new BSD-3-Clause License for this project (see [LICENSE.txt](/LICENSE.txt)).
 
 ## Binder
 
-[Try out the extension online](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/Untitled.ipynb) in Jupyter's online editing notebook environment, Binder. The extension is tested and shown to be moderately functional in Safari 14 and Safari 15.
+[Try out the extension online](https://beta.mybinder.org/v2/gh/nickysinclair/alternatives-nb/HEAD?urlpath=/tree/Untitled.ipynb) in Jupyter's online editing notebook environment, Binder. The extension is tested and shown to be moderately functional in Safari 14 and Safari 15 and with Python 3.9.6 and Jupyter Notebook 6.4.3.
 
 ## Machine Installation
 
-The below machine installation instructions assume a prior installation of _pip_ and _Python_ on the target local machine.
+The below machine installation instructions assume a prior installation of _pip_ and _Python_ on the target local machine. The extension is tested and shown to moderately function in Safari 14 and Safari 15 and with Python 3.9.6 and Jupyter Notebook 6.4.3.
 
 ```bash
 # install jupyter notebook
